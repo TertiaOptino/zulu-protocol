@@ -1,0 +1,32 @@
+/* w2: layout sweep fixes (Game Worker 2). Appended after style.css by build.mjs. */
+/* (2) objective counter: full text by default, compact two-line form on narrow portrait screens (Fold cover 344px, small phones) */
+.hud-obj .w2-os{display:none}
+@media (max-width:520px) and (orientation:portrait){
+ .hud-obj{min-width:0;line-height:1.2}
+ .hud-obj .w2-of{display:none}
+ .hud-obj .w2-os{display:flex;flex-direction:column;align-items:center}
+ .hud-obj .w2-os>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+}
+@media (max-width:380px) and (orientation:portrait){.hud-obj{font-size:11.5px}.hud-top{gap:6px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}}
+/* PAUSED banner sits below the top bar so it never runs into the counter or the buttons */
+@media (orientation:portrait){#hud .banner{top:calc(50px + env(safe-area-inset-top))}}
+/* while the Breach plan is open on a portrait phone, the soldier cards it would half-cover are hidden (team chips stay) */
+@media (max-width:700px) and (orientation:portrait){#hud.planning .hud-ports{visibility:hidden}}
+/* (3) tutorial card: collapsed one-line form used when it would cover a panel; tap to read, tap again to collapse */
+.tut-card.w2-mini{padding:6px 10px;cursor:pointer}
+.tut-card.w2-mini p,.tut-card.w2-mini .tc-chk{display:none}
+.tut-card.w2-mini .tc-h{flex-direction:row;align-items:baseline;gap:2px 8px;flex-wrap:wrap}.tut-card.w2-mini .tc-h b{font-size:13px}
+.tut-card.w2-mini .tc-b{margin-top:2px}.tut-card .w2-ex{color:#ff9a9a;margin-right:auto}
+.tut-exit.w2-tuck{display:none}
+.tut-card.w2-mini .tc-h::after{content:'ⓘ tap to read';font-size:10.5px;color:#8cc8ff;margin-left:auto}
+.tut-card.w2-peek{z-index:47;cursor:pointer}
+.tut-card.w2-peek .tc-h::after{content:'▴ tap to collapse';font-size:10.5px;color:#8cc8ff}
+.tut-exit.w2-free{transform:none;right:auto;bottom:auto}
+@media (max-height:500px) and (orientation:landscape){.tut-exit{top:calc(46px + env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}}
+/* (1) wide portrait screens (tablets): with the unit preview open the 3D soldier is in the side panel, so the 24vh
+   "look at the soldier" spacer above the Operators / Buy units tabs is just a big empty gap — drop it */
+@media (orientation:portrait){#menu.see.pv-open .scr-body{margin-top:0}}
+/* w2: landscape phone plan panel started 2px above the bottom of the tall centre top button */
+@media (orientation:landscape) and (max-height:500px){.planmenu{top:calc(50px + env(safe-area-inset-top));max-height:calc(100dvh - 60px - env(safe-area-inset-top))}}
+/* w2: narrow portrait (Fold 344) - banner text touched the tall centre top button; drop it a few px */
+@media (orientation:portrait) and (max-width:380px){#hud .banner{top:calc(56px + env(safe-area-inset-top))}}
