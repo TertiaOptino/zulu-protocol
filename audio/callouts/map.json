@@ -1,0 +1,325 @@
+{
+ "speaker": "espeak-ng en-us+m3",
+ "lines": {
+  "Contact!": {
+   "file": "audio/callouts/001.mp3",
+   "delivery": "urgent",
+   "event": "contact"
+  },
+  "Contact front!": {
+   "file": "audio/callouts/002.mp3",
+   "delivery": "urgent",
+   "event": "contact"
+  },
+  "Tango spotted!": {
+   "file": "audio/callouts/003.mp3",
+   "delivery": "urgent",
+   "event": "contact"
+  },
+  "Eyes on hostile!": {
+   "file": "audio/callouts/004.mp3",
+   "delivery": "urgent",
+   "event": "contact"
+  },
+  "Tango down.": {
+   "file": "audio/callouts/005.mp3",
+   "delivery": "calm",
+   "event": "down"
+  },
+  "Hostile down.": {
+   "file": "audio/callouts/006.mp3",
+   "delivery": "calm",
+   "event": "down"
+  },
+  "Target down.": {
+   "file": "audio/callouts/007.mp3",
+   "delivery": "calm",
+   "event": "down"
+  },
+  "Got him.": {
+   "file": "audio/callouts/008.mp3",
+   "delivery": "calm",
+   "event": "down"
+  },
+  "Reloading!": {
+   "file": "audio/callouts/009.mp3",
+   "delivery": "urgent",
+   "event": "reload"
+  },
+  "Changing mags!": {
+   "file": "audio/callouts/010.mp3",
+   "delivery": "urgent",
+   "event": "reload"
+  },
+  "Cover me, reloading!": {
+   "file": "audio/callouts/011.mp3",
+   "delivery": "urgent",
+   "event": "reload"
+  },
+  "Breaching!": {
+   "file": "audio/callouts/012.mp3",
+   "delivery": "urgent",
+   "event": "breach"
+  },
+  "Breach, breach, breach!": {
+   "file": "audio/callouts/013.mp3",
+   "delivery": "urgent",
+   "event": "breach"
+  },
+  "Going in!": {
+   "file": "audio/callouts/014.mp3",
+   "delivery": "urgent",
+   "event": "breach"
+  },
+  "Kicking it!": {
+   "file": "audio/callouts/015.mp3",
+   "delivery": "urgent",
+   "event": "kick"
+  },
+  "Charge set! Stand back!": {
+   "file": "audio/callouts/016.mp3",
+   "delivery": "urgent",
+   "event": "charge"
+  },
+  "Fire in the hole!": {
+   "file": "audio/callouts/017.mp3",
+   "delivery": "urgent",
+   "event": "charge"
+  },
+  "Flashbang out!": {
+   "file": "audio/callouts/018.mp3",
+   "delivery": "urgent",
+   "event": "flash"
+  },
+  "Bang out!": {
+   "file": "audio/callouts/019.mp3",
+   "delivery": "urgent",
+   "event": "flash"
+  },
+  "Frag out!": {
+   "file": "audio/callouts/020.mp3",
+   "delivery": "urgent",
+   "event": "frag"
+  },
+  "Smoke out!": {
+   "file": "audio/callouts/021.mp3",
+   "delivery": "calm",
+   "event": "smoke"
+  },
+  "Go go go!": {
+   "file": "audio/callouts/022.mp3",
+   "delivery": "urgent",
+   "event": "go"
+  },
+  "Execute!": {
+   "file": "audio/callouts/023.mp3",
+   "delivery": "urgent",
+   "event": "go"
+  },
+  "Move!": {
+   "file": "audio/callouts/024.mp3",
+   "delivery": "urgent",
+   "event": "go"
+  },
+  "Moving.": {
+   "file": "audio/callouts/025.mp3",
+   "delivery": "calm",
+   "event": "move"
+  },
+  "On the move.": {
+   "file": "audio/callouts/026.mp3",
+   "delivery": "calm",
+   "event": "move"
+  },
+  "Copy, moving.": {
+   "file": "audio/callouts/027.mp3",
+   "delivery": "calm",
+   "event": "move"
+  },
+  "Roger.": {
+   "file": "audio/callouts/028.mp3",
+   "delivery": "calm",
+   "event": "move"
+  },
+  "Holding.": {
+   "file": "audio/callouts/029.mp3",
+   "delivery": "calm",
+   "event": "hold"
+  },
+  "Holding position.": {
+   "file": "audio/callouts/030.mp3",
+   "delivery": "calm",
+   "event": "hold"
+  },
+  "Clear!": {
+   "file": "audio/callouts/031.mp3",
+   "delivery": "calm",
+   "event": "clear"
+  },
+  "Room clear!": {
+   "file": "audio/callouts/032.mp3",
+   "delivery": "calm",
+   "event": "clear"
+  },
+  "Area clear.": {
+   "file": "audio/callouts/033.mp3",
+   "delivery": "calm",
+   "event": "clear"
+  },
+  "Hostage secured!": {
+   "file": "audio/callouts/034.mp3",
+   "delivery": "calm",
+   "event": "hostage"
+  },
+  "Got the hostage!": {
+   "file": "audio/callouts/035.mp3",
+   "delivery": "calm",
+   "event": "hostage"
+  },
+  "Man down!": {
+   "file": "audio/callouts/036.mp3",
+   "delivery": "urgent",
+   "event": "mandown"
+  },
+  "Operator down!": {
+   "file": "audio/callouts/037.mp3",
+   "delivery": "urgent",
+   "event": "mandown"
+  },
+  "They know we're here!": {
+   "file": "audio/callouts/038.mp3",
+   "delivery": "urgent",
+   "event": "alarm"
+  },
+  "We're compromised!": {
+   "file": "audio/callouts/039.mp3",
+   "delivery": "urgent",
+   "event": "alarm"
+  },
+  "Intel secured.": {
+   "file": "audio/callouts/040.mp3",
+   "delivery": "calm",
+   "event": "intel"
+  },
+  "Bomb defused.": {
+   "file": "audio/callouts/041.mp3",
+   "delivery": "calm",
+   "event": "bomb"
+  },
+  "VIP with us!": {
+   "file": "audio/callouts/042.mp3",
+   "delivery": "calm",
+   "event": "vip"
+  },
+  "Package secured.": {
+   "file": "audio/callouts/043.mp3",
+   "delivery": "calm",
+   "event": "vip"
+  },
+  "All teams, mission complete.": {
+   "file": "audio/callouts/044.mp3",
+   "delivery": "calm",
+   "event": "win"
+  },
+  "Objective complete. Good work.": {
+   "file": "audio/callouts/045.mp3",
+   "delivery": "calm",
+   "event": "win"
+  },
+  "I'm hit!": {
+   "file": "audio/callouts/046.mp3",
+   "delivery": "urgent",
+   "event": "hurt"
+  },
+  "Taking fire!": {
+   "file": "audio/callouts/047.mp3",
+   "delivery": "urgent",
+   "event": "hurt"
+  },
+  "Copy.": {
+   "file": "audio/callouts/048.mp3",
+   "delivery": "calm",
+   "event": "ack"
+  },
+  "Roger that.": {
+   "file": "audio/callouts/049.mp3",
+   "delivery": "calm",
+   "event": "ack"
+  },
+  "Understood.": {
+   "file": "audio/callouts/050.mp3",
+   "delivery": "calm",
+   "event": "ack"
+  },
+  "Wilco.": {
+   "file": "audio/callouts/051.mp3",
+   "delivery": "calm",
+   "event": "ack"
+  },
+  "Stacked up.": {
+   "file": "audio/callouts/052.mp3",
+   "delivery": "calm",
+   "event": "stack"
+  },
+  "In position.": {
+   "file": "audio/callouts/053.mp3",
+   "delivery": "calm",
+   "event": "stack"
+  },
+  "Ready to breach.": {
+   "file": "audio/callouts/054.mp3",
+   "delivery": "calm",
+   "event": "stack"
+  },
+  "Set.": {
+   "file": "audio/callouts/055.mp3",
+   "delivery": "calm",
+   "event": "stack"
+  },
+  "Last hostile!": {
+   "file": "audio/callouts/056.mp3",
+   "delivery": "urgent",
+   "event": "last"
+  },
+  "One left!": {
+   "file": "audio/callouts/057.mp3",
+   "delivery": "urgent",
+   "event": "last"
+  },
+  "Covering!": {
+   "file": "audio/callouts/058.mp3",
+   "delivery": "calm",
+   "event": "cover"
+  },
+  "I got you covered.": {
+   "file": "audio/callouts/059.mp3",
+   "delivery": "calm",
+   "event": "cover"
+  },
+  "Hostile on the flank!": {
+   "file": "audio/callouts/060.mp3",
+   "delivery": "urgent",
+   "event": "flank"
+  },
+  "Flanker!": {
+   "file": "audio/callouts/061.mp3",
+   "delivery": "urgent",
+   "event": "flank"
+  },
+  "Ready.": {
+   "file": "audio/callouts/062.mp3",
+   "delivery": "calm",
+   "event": "ready"
+  },
+  "Standing by.": {
+   "file": "audio/callouts/063.mp3",
+   "delivery": "calm",
+   "event": "ready"
+  },
+  "__fallback__": {
+   "file": "audio/callouts/fallback.mp3",
+   "delivery": "calm",
+   "event": "ack"
+  }
+ }
+}
