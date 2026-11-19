@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>window.__ZULU_BUILD="zulu-dd4e520013";window.__ZULU_BUILT="2026-11-19T23:50:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-c275bcfdd7";window.__ZULU_BUILT="2026-11-19T23:20:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:var(--tx);user-select:none;-webkit-user-select:none;touch-action:none;overscroll-behavior:none}
 #cv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;touch-action:none}
@@ -5902,10 +5902,11 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     if (!document.getElementById('batch3css')) {
       const st = document.createElement('style');
       st.id = 'batch3css';
-      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:80;background:#07090ccc;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
+      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:80;background:#07090ccc;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut.live{background:linear-gradient(to top,#07090cf0 0%,#07090c00 46%);justify-content:flex-end;padding-bottom:max(16px,env(safe-area-inset-bottom))}.w8v-card{border:1px solid #334;border-radius:10px;padding:10px 12px;margin:8px 0;background:#12161c}.w8v-card.cur{border-color:#e37b22}.w8v-go{font:700 14px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:8px;padding:8px 12px;min-height:40px}.w8v-warn{background:#3a2a12;border-radius:8px;padding:8px 10px;margin-bottom:8px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
       document.head.append(st);
     }
     frameCam();
+    installVersions(app);
     const sfx = window.__audio && window.__audio.sfx;
     if (sfx && !sfx.__boots) { sfx.__boots = true; sfx.step = bootStep; }
     const orig = app.startMission.bind(app);
@@ -5931,9 +5932,16 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const recipe = recipeFor(label, info.scenery);
       return { title: 'Stage ' + n + ' of 5 · ' + label, body: (CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing that belongs to another stage is left in these rooms.' };
     }
-    function showCards(cards, done) {
+    function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+    function showCards(cards, done) { playSceneCut(window.__game, cards, done); }
+    function playSceneCut(g, cards, done) {
+      if (!g || !g.env || !g.env.cam) { done(); return; }
+      const cam = g.env.cam;
+      const saved = { pitch: cam.pitch, dist: cam.dist, yaw: cam.yaw, x: cam.target.x, y: cam.target.y, z: cam.target.z };
+      if (g.setPaused) g.setPaused(true);
+      if (app.hud) { if (app.hud.closePlan) app.hud.closePlan(); if (app.hud.closeMenus) app.hud.closeMenus(); }
       const root = document.createElement('div');
-      root.className = 'zcut';
+      root.className = 'zcut live';
       root.setAttribute('role', 'dialog');
       const h = document.createElement('h2');
       const p = document.createElement('p');
@@ -5941,23 +5949,72 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const actions = document.createElement('div');
       actions.className = 'zcut-actions';
       const nextB = document.createElement('button');
-      nextB.textContent = 'Continue';
       const skipB = document.createElement('button');
       skipB.className = 'ghost';
       skipB.textContent = 'Skip';
       actions.append(nextB, skipB);
       root.append(h, p, step, actions);
       document.body.append(root);
-      let i = 0;
-      const paint = () => { const c = cards[i]; h.textContent = c.title; p.textContent = c.body; step.textContent = (i + 1) + ' / ' + cards.length; nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue'; };
-      const finish = () => { root.remove(); document.removeEventListener('keydown', onKey); done(); };
-      const advance = () => { i++; if (i >= cards.length) finish(); else paint(); };
+      let i = 0, audio = null, raf = 0, t0 = 0;
+      const ops = (g.ops || []).filter((o) => o.alive);
+      const stopAudio = () => { if (!audio) return; try { audio.pause(); } catch (e) {} audio.src = ''; audio = null; };
+      const aim = (k) => {
+        const wide = k === 0;
+        const op = ops.length ? ops[k % ops.length] : null;
+        const x = wide || !op ? g.level.W / 2 : op.x;
+        const z = wide || !op ? g.level.H / 2 : op.z;
+        cam.target.set(x, 0, z);
+        cam.pitch = wide ? 0.62 : 0.5;
+        cam.dist = wide ? 32 : 14;
+        cam.yaw = saved.yaw + k * 0.55;
+      };
+      const finish = () => {
+        if (raf) cancelAnimationFrame(raf);
+        stopAudio();
+        root.remove();
+        document.removeEventListener('keydown', onKey);
+        cam.target.set(saved.x, saved.y, saved.z);
+        cam.pitch = saved.pitch; cam.dist = saved.dist; cam.yaw = saved.yaw;
+        done();
+      };
+      const advance = () => { i++; if (i >= cards.length) finish(); else playBeat(); };
       const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); finish(); } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advance(); } };
+      function playBeat() {
+        stopAudio();
+        const c = cards[i];
+        h.textContent = c.title;
+        p.textContent = c.body;
+        step.textContent = (i + 1) + ' / ' + cards.length;
+        nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue';
+        aim(i);
+        t0 = performance.now();
+        if (c.file) {
+          audio = new Audio(c.file);
+          const mix = window.__audio && window.__audio.getMix && window.__audio.getMix();
+          audio.volume = Math.max(0, Math.min(1, ((mix && mix.voice) || 0.8) * ((mix && mix.master) || 0.8)));
+          audio.onended = () => { if (root.isConnected) setTimeout(advance, 400); };
+          audio.play().catch(() => {});
+        }
+      }
+      const glide = (now) => {
+        if (!root.isConnected) return;
+        const u = Math.min(1, (now - t0) / 2800);
+        cam.yaw = saved.yaw + i * 0.55 + u * 0.35;
+        raf = requestAnimationFrame(glide);
+      };
       nextB.addEventListener('click', (e) => { e.stopPropagation(); advance(); });
       skipB.addEventListener('click', (e) => { e.stopPropagation(); finish(); });
       document.addEventListener('keydown', onKey);
-      paint();
+      playBeat();
+      raf = requestAnimationFrame(glide);
     }
+    const LORE_BEATS = [
+      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3' },
+      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3' },
+      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3' },
+      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3' },
+      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3' }
+    ];
     function starText(n) { return [1, 2, 3].map((i) => (i <= n ? '★' : '☆')).join(''); }
     function remember(save, id, n, stars) {
       save.zuluStages = save.zuluStages || {};
@@ -5971,11 +6028,12 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       for (let n = 1; n <= 5; n++) if (!rec[n]) return n;
       return 1;
     }
-    function launch(flow) {
+    function launch(flow, beats) {
       const tagged = Object.assign({}, flow.mission, { stage: flow.n, __zuluInternal: true });
       orig(tagged, flow.squad, flow.entries);
       const g = window.__game;
       if (g) dress(g, flow.n);
+      if (beats && beats.length) playSceneCut(g, beats, () => {});
     }
     function stageSheet(flow, r, win) {
       const stars = win ? (r.stars | 0) : 0;
@@ -6003,13 +6061,13 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
           root.remove();
           const nflow = { missionId: flow.missionId, n: flow.n + 1, mission: flow.mission, squad: flow.squad, entries: flow.entries };
           app.__stageFlow = nflow;
-          showCards([stageCard(flow.mission, nflow.n)], () => launch(nflow));
+          launch(nflow, [Object.assign({ file: 'audio/cuts/stage/s-' + slug(stageNames(flow.mission)[nflow.n - 1]) + '.mp3' }, stageCard(flow.mission, nflow.n))]);
         };
         actions.append(next);
       } else if (!win) {
         const retry = document.createElement('button');
         retry.textContent = 'Retry stage';
-        retry.onclick = () => { root.remove(); app.__stageFlow = flow; showCards([stageCard(flow.mission, flow.n)], () => launch(flow)); };
+        retry.onclick = () => { root.remove(); app.__stageFlow = flow; launch(flow, [Object.assign({ file: 'audio/cuts/stage/s-' + slug(stageNames(flow.mission)[flow.n - 1]) + '.mp3' }, stageCard(flow.mission, flow.n))]); };
         actions.append(retry);
       }
       root.append(h, st, note, actions);
@@ -6021,10 +6079,13 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const flow = { missionId: mission.id, n, mission, squad, entries };
       app.__stageFlow = flow;
       const cards = [];
-      if (!app.save.zuluLoreSeen) cards.push(LORE);
-      cards.push(missionCard(mission));
-      cards.push(stageCard(mission, n));
-      showCards(cards, () => { app.save.zuluLoreSeen = true; if (app.persist) app.persist(); launch(flow); });
+      if (!app.save.zuluLoreSeen) cards.push.apply(cards, LORE_BEATS);
+      const info = mapInfo(mission);
+      cards.push(Object.assign({ file: 'audio/cuts/mission/m-' + mission.id + '.mp3' }, missionCard(mission), { body: mission.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' }));
+      cards.push(Object.assign({ file: 'audio/cuts/stage/s-' + slug(stageNames(mission)[n - 1]) + '.mp3' }, stageCard(mission, n)));
+      launch(flow, cards);
+      app.save.zuluLoreSeen = true;
+      if (app.persist) app.persist();
     };
     app.onEnd = function (r) {
       const flow = app.__stageFlow;
@@ -6048,7 +6109,83 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       stageSheet(flow, r, win);
     };
   }
-  window.__zuluPlaces = { maps: MAPS, stages: STAGES, contents: CONTENTS, checklist, recipeFor };
+  const OLD_VERSIONS = [
+    { id: 'a085', file: 'zulu-a085e505de.html', label: 'Map rooms and boot steps', date: 'Nov 19, 2026 · 23:05 UTC', what: 'Boot footsteps, stage-named rooms, and a wider opening view. Stages were still a label, not a rated sequence.' },
+    { id: '9a8f', file: 'zulu-9a8f4d62d0.html', label: 'Neural male radio voice', date: 'Nov 19, 2026 · 22:25 UTC', what: 'One LibriTTS male voice on every device, plus door stacks, the radio log, and the shots counter.' },
+    { id: '89ce', file: 'zulu-89ce849087.html', label: 'Door stacks and radio log', date: 'Nov 19, 2026 · 22:15 UTC', what: 'Wall-side door stacks, the radio log, and the shots counter. Radio clips were still espeak.' },
+    { id: 'f3d1', file: 'zulu-f3d1068cfa.html', label: 'Bundled voice and update notice', date: 'Nov 8, 2026 · 21:16 UTC', what: 'The first bundled male callouts, the visible build id, and the update toast.' },
+    { id: '192b', file: 'zulu-192bccc155.html', label: 'First published build', date: 'Nov 1, 2026 · 20:27 UTC', what: 'The first Pages build. Planted legs and the tactical view. No bundled voice clips.' }
+  ];
+  const SAVE_KEY = 'zulu_protocol_save_v1', SAVE_BAK = 'zulu_w8_save_backup', SAVE_RET = 'zulu_w8_return';
+  function installVersions(app) {
+    const menus = app.menus;
+    if (!menus || !menus.settings || menus.__zver) return;
+    menus.__zver = true;
+    const settings = menus.settings.bind(menus);
+    menus.settings = function () {
+      const r = settings.apply(menus, arguments);
+      const body = document.querySelector('#menu .scr-body') || document.querySelector('#menu .screen');
+      if (body && !body.querySelector('.w8v-entry')) {
+        const h = document.createElement('h4');
+        h.className = 'w8v-entry';
+        h.textContent = 'OLD VERSIONS';
+        const b = document.createElement('button');
+        b.className = 'pm-row w8v-entry';
+        b.innerHTML = 'Play an older build <b>' + OLD_VERSIONS.length + ' builds ›</b>';
+        b.onclick = () => versionsScreen();
+        body.append(h, b);
+      }
+      if (window.__zuluSaveRestored && !document.querySelector('.w8v-toast')) {
+        const t = document.createElement('div');
+        t.className = 'w8v-toast';
+        t.textContent = 'Back on the current version. Your save was restored.';
+        t.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:90;background:#14180f;color:#e7f0df;border:1px solid #e37b22;border-radius:10px;padding:10px 14px;font:600 14px system-ui';
+        document.body.append(t);
+        setTimeout(() => t.remove(), 5000);
+        window.__zuluSaveRestored = null;
+      }
+      return r;
+    };
+    function versionsScreen() {
+      const body = menus.screen ? menus.screen('oldver', 'Old versions', () => menus.settings()) : null;
+      const host = body || document.querySelector('#menu .scr-body');
+      if (!host) return;
+      host.querySelectorAll('.w8v-card,.w8v-warn,.w8v-status').forEach((n) => n.remove());
+      const warn = document.createElement('div');
+      warn.className = 'w8v-warn';
+      warn.innerHTML = '<b>Older builds share this browser’s save.</b> Opening one backs up the current save. It is restored when you choose Back to current version. Progress made inside an old build is not kept.';
+      host.append(warn);
+      const cur = document.createElement('div');
+      cur.className = 'w8v-card cur';
+      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Five rated stages, in-engine cutscenes, the male voice, and this picker.</div>';
+      host.append(cur);
+      for (const v of OLD_VERSIONS) {
+        const c = document.createElement('div');
+        c.className = 'w8v-card';
+        c.innerHTML = '<div><b></b> <span></span></div><div class="w8v-w"></div>';
+        c.querySelector('b').textContent = v.label;
+        c.querySelector('span').textContent = v.date;
+        c.querySelector('.w8v-w').textContent = v.what;
+        const go = document.createElement('button');
+        go.className = 'w8v-go';
+        go.textContent = 'Play';
+        go.onclick = () => {
+          try {
+            if (!localStorage.getItem(SAVE_BAK)) localStorage.setItem(SAVE_BAK, JSON.stringify({ t: Date.now(), save: localStorage.getItem(SAVE_KEY) }));
+            sessionStorage.setItem(SAVE_RET, location.href.split('#')[0]);
+          } catch (e) {}
+          location.href = 'versions/' + v.file;
+        };
+        c.append(go);
+        host.append(c);
+      }
+      const note = document.createElement('p');
+      note.className = 'w8v-status';
+      note.textContent = 'Each older build has a Back to current version bar at the top.';
+      host.append(note);
+    }
+  }
+  window.__zuluPlaces = { maps: MAPS, stages: STAGES, contents: CONTENTS, checklist, recipeFor, versions: OLD_VERSIONS };
   const wait = setInterval(() => { if (window.__app && window.__audio) { clearInterval(wait); boot(); } }, 40);
 })();
 
