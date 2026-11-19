@@ -1,5 +1,5 @@
 {
- "speaker": "espeak-ng en-us+m3",
+ "speaker": "piper en_US-libritts-high speaker 66 (LibriTTS reader 5717, male)",
  "lines": {
   "Contact!": {
    "file": "audio/callouts/001.mp3",
@@ -321,5 +321,24 @@
    "delivery": "calm",
    "event": "ack"
   }
- }
+ },
+ "engine": "Piper 2023.11.14-2, not shipped",
+ "model": "rhasspy/piper-voices en_US-libritts-high, trained from scratch on LibriTTS train-clean-360 (CC BY 4.0). Weights are not in the game.",
+ "delivery": {
+  "urgent": {
+   "length_scale": 0.65,
+   "noise_scale": 0.75,
+   "noise_w": 0.9,
+   "sentence_silence": 0.02
+  },
+  "calm": {
+   "length_scale": 1.5,
+   "noise_scale": 0.333,
+   "noise_w": 0.4,
+   "sentence_silence": 0.05
+  },
+  "playbackRate": 1,
+  "note": "Pace and variation are baked into each clip. This is not an acted shout."
+ },
+ "fallbackSpoken": "Copy."
 }
