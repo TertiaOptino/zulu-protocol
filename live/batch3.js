@@ -2,21 +2,21 @@
    Hooks the published game. Does not replace the voice clips or the update toast. */
 (function () {
   const STAGES = {
-    embassy: ['Front Gate', 'Motor Pool', 'Consular Wing', 'Residence'],
-    warehouse: ['Loading Yard', 'Cold Store', 'Container Stacks', 'Office Block'],
-    kandahar: ['Outer Wall', 'Stables', 'Courtyard', 'Safe Rooms'],
-    oilrig: ['Helideck', 'Pump Room', 'Drill Floor', 'Crew Quarters'],
-    subway: ['Street Entrance', 'Service Tunnels', 'Ticket Hall', 'Platform B'],
-    hkoffice: ['Lobby', 'Car Park', 'Floors 12–20', 'Floors 30–40'],
-    bank: ['Lobby', 'Underground Car Park', 'Trading Floor', 'Vault Corridor'],
-    ship: ['Gangway', 'Cargo Hold', 'Main Deck', 'Bridge Deck'],
-    nairobi: ['Perimeter', 'Garage', 'Admin Wing', 'Records Room'],
-    rio: ['Dock Gate', 'Truck Bay', 'Warehouse Floor', 'Mezzanine'],
-    forest: ['Pine Ridge', 'Night in the Pines', 'Lodge Grounds', 'Woodshed Trail'],
-    valley: ['Orchard Edge', 'Night Patrol', 'Irrigation Canals', 'Farmhouse'],
-    port: ['Terminal Gate', 'Night Shift', 'Container Stacks', 'Quayside'],
-    ranch: ['Paddocks', 'Night on the Ranch', 'Acacia Line', 'Ranch House'],
-    killhouse: ['Lane 1', 'Lights Out', 'Lane 2', 'Lane 3'],
+    embassy: ['Front Gate', 'Motor Pool', 'Consular Wing', 'Residence', 'Chancery'],
+    warehouse: ['Loading Yard', 'Cold Store', 'Container Stacks', 'Office Block', 'Dispatch Office'],
+    kandahar: ['Outer Wall', 'Stables', 'Courtyard', 'Safe Rooms', 'Inner Compound'],
+    oilrig: ['Helideck', 'Pump Room', 'Drill Floor', 'Crew Quarters', 'Wellhead'],
+    subway: ['Street Entrance', 'Service Tunnels', 'Ticket Hall', 'Platform B', 'Concourse'],
+    hkoffice: ['Lobby', 'Car Park', 'Floors 12–20', 'Floors 30–40', 'Executive Floor'],
+    bank: ['Lobby', 'Underground Car Park', 'Trading Floor', 'Vault Corridor', 'Vault Floor'],
+    ship: ['Gangway', 'Cargo Hold', 'Main Deck', 'Bridge Deck', 'The Bridge'],
+    nairobi: ['Perimeter', 'Garage', 'Admin Wing', 'Records Room', 'Annex Archive'],
+    rio: ['Dock Gate', 'Truck Bay', 'Warehouse Floor', 'Mezzanine', 'Depot Office'],
+    forest: ['Pine Ridge', 'Pine Camp', 'Lodge Grounds', 'Woodshed Trail', 'Ridge Road'],
+    valley: ['Orchard Edge', 'Patrol Track', 'Irrigation Canals', 'Farmhouse', 'Farm Gate'],
+    port: ['Terminal Gate', 'Control Tower', 'Container Stacks', 'Quayside', 'Harbour Office'],
+    ranch: ['Paddocks', 'Bunkhouse', 'Acacia Line', 'Ranch House', 'Ranch Yard'],
+    killhouse: ['Lane 1', 'Shoothouse', 'Lane 2', 'Lane 3', 'Final Range'],
   };
   const MAPS = {
     embassy: { name: 'The Embassy', place: 'Ankara, Turkey', scenery: 'city', backdrop: 'City skyline around the compound' },
@@ -39,6 +39,14 @@
 
   function recipeFor(label, scenery) {
     const s = label || '';
+    if (/pine camp|bunkhouse|safe rooms/i.test(s)) return 'bunker';
+    if (/control tower|helideck/i.test(s)) return 'heli';
+    if (/wellhead/i.test(s)) return 'drill';
+    if (/chancery|dispatch office|annex archive|depot office|harbour office|executive floor/i.test(s)) return 'office';
+    if (/vault floor|vault corridor/i.test(s)) return 'vault';
+    if (/the bridge|bridge deck/i.test(s)) return 'bridge';
+    if (/concourse/i.test(s)) return 'waiting';
+    if (/ridge road|farm gate|patrol track|shoothouse|final range|inner compound|ranch yard/i.test(s)) return 'checkpoint';
     if (/car park|motor pool|garage/i.test(s)) return 'parking';
     if (/loading yard|truck bay|dock gate|gangway|quayside|terminal gate/i.test(s)) return 'loading';
     if (/cold store/i.test(s)) return 'cold';
@@ -100,7 +108,6 @@
         const recipe = recipeFor(label, m.scenery);
         rows.push({ map: key, mapName: m.name, place: m.place, stage: i + 1, label, scenery: m.scenery, backdrop: m.backdrop, recipe, contents: CONTENTS[recipe] });
       });
-      rows.push({ map: key, mapName: m.name, place: m.place, stage: 5, label: 'Final', scenery: m.scenery, backdrop: m.backdrop, recipe: recipeFor('', m.scenery), contents: CONTENTS[recipeFor('', m.scenery)] + ' (the map’s own set)' });
     }
     return rows;
   }
@@ -322,10 +329,11 @@
     const mapKey = (L.def && (L.def.stageOf || L.def.key || L.def.id)) || (g.mission && g.mission.map) || '';
     const base = String(mapKey).split('@')[0];
     const info = MAPS[base] || { name: L.def && L.def.name || base, place: '', scenery: L.scenery || 'city', backdrop: 'Surrounding terrain' };
-    const names = STAGES[base] || ['Approach', 'Lower Level', 'Inner Rooms', 'Upper Level'];
+    const names = STAGES[base] || ['Approach', 'Service Level', 'Inner Rooms', 'Upper Level', 'Far Side'];
     const n = Math.max(1, Math.min(5, stageN || 1));
-    const label = n === 5 ? 'Final: ' + (g.mission && g.mission.title || info.name) : names[n - 1];
-    const recipe = recipeFor(n === 5 ? '' : label, info.scenery);
+    const label = names[n - 1];
+    const recipe = recipeFor(label, info.scenery);
+    stripBuiltIns(scene, L);
     const group = empty(bits);
     group.name = 'zstage';
     const kit = KIT[recipe] || KIT.lobby;
@@ -360,10 +368,15 @@
     });
     const op = g.ops && g.ops.find((o) => o.alive);
     if (op) {
-      const sig = kit[0];
-      const p = prop(bits, sig);
-      add(group, p, op.x + 2.6, op.z + 1.4, 0.6);
-      placed++;
+      const ix = Math.floor(op.x), iz = Math.floor(op.z);
+      const home = rooms.find((room) => room.cells.some(([x, z]) => x === ix && z === iz)) || rooms[0];
+      const cx = home ? (home.minx + home.maxx) / 2 + 0.5 : op.x + 2;
+      const cz = home ? (home.minz + home.maxz) / 2 + 0.5 : op.z + 2;
+      kit.slice(0, 3).forEach((kind, i) => {
+        const p = prop(bits, kind);
+        add(group, p, cx + (i - 1) * 2.1, cz, i * 0.4);
+        placed++;
+      });
     }
     if (SEA[info.scenery]) {
       // a ring of water outside the playable grid, low enough that it cannot cover the camera
@@ -386,31 +399,59 @@
       cam.pitch = info.scenery === 'forest' ? 0.6 : (SEA[info.scenery] ? 0.78 : 0.9);
       cam.dist = Math.max(24, Math.min(cam.dist || 24, 32));
     }
-    g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed };
+    g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id };
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
   }
 
+  function stripBuiltIns(scene, L) {
+    const inside = (x, z) => x > 0.4 && z > 0.4 && x < L.W - 0.4 && z < L.H - 0.4;
+    scene.updateMatrixWorld(true);
+    scene.traverse((o) => {
+      if (!o.isMesh || o.isSkinnedMesh) return;
+      const nm = o.name || '';
+      if (nm === 'zstage' || nm === 'zmove' || nm.indexOf('b3') === 0) return;
+      let p = o.parent;
+      while (p) { if (p.name === 'zstage' || p.name === 'zmove') return; p = p.parent; }
+      if (o.isInstancedMesh && o.getMatrixAt && o.setMatrixAt && o.count) {
+        const M = o.matrix.clone();
+        let hid = 0;
+        for (let i = 0; i < o.count; i++) {
+          o.getMatrixAt(i, M);
+          const x = M.elements[12], z = M.elements[14];
+          if (inside(x, z)) { M.makeScale(0, 0, 0); o.setMatrixAt(i, M); hid++; }
+        }
+        if (hid && o.instanceMatrix) o.instanceMatrix.needsUpdate = true;
+        return;
+      }
+      if (!o.geometry) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox;
+      if (!bb) return;
+      const fw = (bb.max.x - bb.min.x) * Math.abs(o.scale.x || 1);
+      const fd = (bb.max.z - bb.min.z) * Math.abs(o.scale.z || 1);
+      const fh = (bb.max.y - bb.min.y) * Math.abs(o.scale.y || 1);
+      if ((fw > 16 || fd > 16) && fh < 0.45) return;
+      if (fw > 24 || fd > 24) return;
+      const e = o.matrixWorld.elements;
+      if (!inside(e[12], e[14])) return;
+      o.visible = false;
+    });
+  }
   function paintLabel(g) {
     const top = document.querySelector('#hud .hud-top');
     if (!top || !g.zuluStage) return;
     let el = top.querySelector('.zstage');
     if (!el) {
-      el = document.createElement('button');
+      el = document.createElement('div');
       el.className = 'zstage';
-      el.type = 'button';
-      el.title = 'Cycle the stage look. The name matches the furniture.';
       top.append(el);
-      el.addEventListener('click', () => {
-        const game = window.__game;
-        if (!game) return;
-        const cur = (game.zuluStage && game.zuluStage.n) || 1;
-        dress(game, cur >= 5 ? 1 : cur + 1);
-      });
     }
     const s = g.zuluStage;
-    el.textContent = 'Stage ' + s.n + '/5 · ' + s.label;
+    const rec = (window.__app && window.__app.save && window.__app.save.zuluStages && window.__app.save.zuluStages[s.missionId]) || {};
+    const stars = rec[s.n] || 0;
+    el.textContent = 'Stage ' + s.n + '/5 · ' + s.label + (stars ? ' · ' + '★★★'.slice(0, stars) : '');
   }
 
   let mover = null;
@@ -459,18 +500,150 @@
     if (!document.getElementById('batch3css')) {
       const st = document.createElement('style');
       st.id = 'batch3css';
-      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;cursor:pointer;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}}';
+      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:80;background:#07090ccc;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
       document.head.append(st);
     }
     frameCam();
     const sfx = window.__audio && window.__audio.sfx;
     if (sfx && !sfx.__boots) { sfx.__boots = true; sfx.step = bootStep; }
     const orig = app.startMission.bind(app);
-    app.startMission = function () {
-      const r = orig.apply(this, arguments);
+    const origEnd = app.onEnd.bind(app);
+    const LORE = {
+      title: 'Zulu Protocol',
+      body: 'Zulu is this squad’s operational callsign for the deployment. It is not a new name for the operators, and the Zulu Protocol is the order that sends them, not the name of a unit. The people you select keep their real identities. They did not serve together in history. This scenario is fiction: ten operators, Alpha four, Bravo three, Charlie three, against local terrorists, smugglers and cartels. Training comes first, then a job in Ankara — intel, a rescue, a bomb, and an extraction. Money in the armoury is the support budget for equipment. It does not buy soldiers.'
+    };
+    function stageNames(mission) {
+      const key = mission && mission.map;
+      return STAGES[key] || ['Approach', 'Service Level', 'Inner Rooms', 'Upper Level', 'Far Side'];
+    }
+    function mapInfo(mission) {
+      return MAPS[mission && mission.map] || { name: mission && mission.title || 'Mission', place: '' };
+    }
+    function missionCard(mission) {
+      const info = mapInfo(mission);
+      return { title: mission.title, body: info.name + (info.place ? ', ' + info.place : '') + '. ' + (info.backdrop || '') + ' You will clear it in five stages, in order. Each stage keeps its own three-star rating. Leave from the pause menu whenever you want.' };
+    }
+    function stageCard(mission, n) {
+      const label = stageNames(mission)[n - 1];
+      const info = mapInfo(mission);
+      const recipe = recipeFor(label, info.scenery);
+      return { title: 'Stage ' + n + ' of 5 · ' + label, body: (CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing that belongs to another stage is left in these rooms.' };
+    }
+    function showCards(cards, done) {
+      const root = document.createElement('div');
+      root.className = 'zcut';
+      root.setAttribute('role', 'dialog');
+      const h = document.createElement('h2');
+      const p = document.createElement('p');
+      const step = document.createElement('div');
+      const actions = document.createElement('div');
+      actions.className = 'zcut-actions';
+      const nextB = document.createElement('button');
+      nextB.textContent = 'Continue';
+      const skipB = document.createElement('button');
+      skipB.className = 'ghost';
+      skipB.textContent = 'Skip';
+      actions.append(nextB, skipB);
+      root.append(h, p, step, actions);
+      document.body.append(root);
+      let i = 0;
+      const paint = () => { const c = cards[i]; h.textContent = c.title; p.textContent = c.body; step.textContent = (i + 1) + ' / ' + cards.length; nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue'; };
+      const finish = () => { root.remove(); document.removeEventListener('keydown', onKey); done(); };
+      const advance = () => { i++; if (i >= cards.length) finish(); else paint(); };
+      const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); finish(); } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advance(); } };
+      nextB.addEventListener('click', (e) => { e.stopPropagation(); advance(); });
+      skipB.addEventListener('click', (e) => { e.stopPropagation(); finish(); });
+      document.addEventListener('keydown', onKey);
+      paint();
+    }
+    function starText(n) { return [1, 2, 3].map((i) => (i <= n ? '★' : '☆')).join(''); }
+    function remember(save, id, n, stars) {
+      save.zuluStages = save.zuluStages || {};
+      const rec = save.zuluStages[id] = save.zuluStages[id] || {};
+      rec[n] = Math.max(rec[n] || 0, stars);
+      if (app.persist) app.persist();
+      return rec;
+    }
+    function resumeAt(save, id) {
+      const rec = (save.zuluStages && save.zuluStages[id]) || {};
+      for (let n = 1; n <= 5; n++) if (!rec[n]) return n;
+      return 1;
+    }
+    function launch(flow) {
+      const tagged = Object.assign({}, flow.mission, { stage: flow.n, __zuluInternal: true });
+      orig(tagged, flow.squad, flow.entries);
       const g = window.__game;
-      if (g) dress(g, (g.mission && g.mission.stage) || 1);
-      return r;
+      if (g) dress(g, flow.n);
+    }
+    function stageSheet(flow, r, win) {
+      const stars = win ? (r.stars | 0) : 0;
+      const label = stageNames(flow.mission)[flow.n - 1];
+      const root = document.createElement('div');
+      root.className = 'zaar';
+      const h = document.createElement('h2');
+      h.textContent = label;
+      const st = document.createElement('div');
+      st.className = 'stars';
+      st.textContent = win ? starText(stars) : 'Left the stage';
+      const note = document.createElement('p');
+      note.textContent = win ? (flow.n < 5 ? 'Stage ' + flow.n + ' of 5 is rated on its own. The next stage is ' + stageNames(flow.mission)[flow.n] + '.' : 'All five stages of this mission are done.') : 'No stars for a stage you leave or lose. You can try it again.';
+      const actions = document.createElement('div');
+      actions.className = 'zcut-actions';
+      const menu = document.createElement('button');
+      menu.className = 'ghost';
+      menu.textContent = 'Main menu';
+      menu.onclick = () => { root.remove(); app.__stageFlow = null; if (app.menus && app.menus.main) app.menus.main(); };
+      actions.append(menu);
+      if (win && flow.n < 5) {
+        const next = document.createElement('button');
+        next.textContent = 'Next stage';
+        next.onclick = () => {
+          root.remove();
+          const nflow = { missionId: flow.missionId, n: flow.n + 1, mission: flow.mission, squad: flow.squad, entries: flow.entries };
+          app.__stageFlow = nflow;
+          showCards([stageCard(flow.mission, nflow.n)], () => launch(nflow));
+        };
+        actions.append(next);
+      } else if (!win) {
+        const retry = document.createElement('button');
+        retry.textContent = 'Retry stage';
+        retry.onclick = () => { root.remove(); app.__stageFlow = flow; showCards([stageCard(flow.mission, flow.n)], () => launch(flow)); };
+        actions.append(retry);
+      }
+      root.append(h, st, note, actions);
+      document.body.append(root);
+    }
+    app.startMission = function (mission, squad, entries) {
+      if (mission && mission.__zuluInternal) return orig(mission, squad, entries);
+      const n = resumeAt(app.save, mission.id);
+      const flow = { missionId: mission.id, n, mission, squad, entries };
+      app.__stageFlow = flow;
+      const cards = [];
+      if (!app.save.zuluLoreSeen) cards.push(LORE);
+      cards.push(missionCard(mission));
+      cards.push(stageCard(mission, n));
+      showCards(cards, () => { app.save.zuluLoreSeen = true; if (app.persist) app.persist(); launch(flow); });
+    };
+    app.onEnd = function (r) {
+      const flow = app.__stageFlow;
+      if (!flow || !r || !r.mission) return origEnd(r);
+      const win = !!(r.win && !r.aborted);
+      const stars = win ? (r.stars | 0) : 0;
+      if (win) remember(app.save, flow.missionId, flow.n, stars);
+      if (win && flow.n === 5) {
+        const rec = app.save.zuluStages[flow.missionId];
+        const ret = origEnd(r);
+        const best = Math.max(rec[1] || 0, rec[2] || 0, rec[3] || 0, rec[4] || 0, rec[5] || 0);
+        app.save.stars[flow.missionId] = best;
+        app.save.completed[flow.missionId] = true;
+        if (app.persist) app.persist();
+        app.__stageFlow = null;
+        return ret;
+      }
+      if (app.hud && app.hud.hide) app.hud.hide();
+      if (app.input && app.input.setGame) app.input.setGame(null);
+      if (app.endGame) app.endGame();
+      stageSheet(flow, r, win);
     };
   }
   window.__zuluPlaces = { maps: MAPS, stages: STAGES, contents: CONTENTS, checklist, recipeFor };
