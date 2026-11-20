@@ -400,6 +400,7 @@
       cam.dist = Math.max(24, Math.min(cam.dist || 24, 32));
     }
     g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id };
+    if (window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
@@ -500,7 +501,7 @@
     if (!document.getElementById('batch3css')) {
       const st = document.createElement('style');
       st.id = 'batch3css';
-      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:80;background:#07090ccc;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut.live{background:linear-gradient(to top,#07090cf0 0%,#07090c00 46%);justify-content:flex-end;padding-bottom:max(16px,env(safe-area-inset-bottom))}.w8v-card{border:1px solid #334;border-radius:10px;padding:10px 12px;margin:8px 0;background:#12161c}.w8v-card.cur{border-color:#e37b22}.w8v-go{font:700 14px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:8px;padding:8px 12px;min-height:40px}.w8v-warn{background:#3a2a12;border-radius:8px;padding:8px 10px;margin-bottom:8px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
+      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:600;background:#07090ccc;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut.live{z-index:600;background:transparent;justify-content:flex-start;align-items:stretch;padding:max(8px,env(safe-area-inset-top)) 8px 0;pointer-events:none}.zcut .zcap{pointer-events:auto;background:#07090cf8;color:#fff;border:2px solid #ffb060;border-radius:12px;padding:12px 14px;width:min(680px,calc(100vw - 16px));max-height:42vh;overflow:auto;box-shadow:0 10px 28px #000;text-align:left}.zcut.live h2{color:#fff;font:800 22px/1.2 system-ui,sans-serif;margin:0 0 6px}.zcut.live p{color:#f4f7f2;font:600 17px/1.35 system-ui,sans-serif;margin:0;max-width:none}.zcut .zcut-actions{pointer-events:auto}body:has(.zcut) .rotate-hint{display:none!important}.w8v-card{border:1px solid #334;border-radius:10px;padding:10px 12px;margin:8px 0;background:#12161c}.w8v-card.cur{border-color:#e37b22}.w8v-go{font:700 14px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:8px;padding:8px 12px;min-height:40px}.w8v-warn{background:#3a2a12;border-radius:8px;padding:8px 10px;margin-bottom:8px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
       document.head.append(st);
     }
     frameCam();
@@ -528,7 +529,23 @@
       const label = stageNames(mission)[n - 1];
       const info = mapInfo(mission);
       const recipe = recipeFor(label, info.scenery);
-      return { title: 'Stage ' + n + ' of 5 · ' + label, body: (CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing that belongs to another stage is left in these rooms.' };
+      const lore = window.__zuluStageLine && window.__zuluStageLine(mission, n, label, info);
+      return { title: 'Stage ' + n + ' of 5 · ' + label, body: lore || ((CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing from another stage is left here.') };
+    }
+    function stageAct(label) {
+      return /floors \d|mezzanine|bridge deck|executive floor|crew quarters/i.test(label || '') ? 'stairs' : 'stack';
+    }
+    function stageBeats(mission, n) {
+      const label = stageNames(mission)[n - 1];
+      const info = mapInfo(mission);
+      const lore = stageCard(mission, n).body;
+      const loreFile = (window.__zuluStageAudio && window.__zuluStageAudio(mission, n, label)) || ('audio/cuts/stage/s-' + slug(label) + '.mp3');
+      const mid = stageAct(label);
+      return [
+        { title: label, body: 'The team is moving in.', file: 'audio/cuts/act/deploy.mp3', act: 'deploy' },
+        { title: label, body: mid === 'stairs' ? 'They take the stairs.' : 'They stack on the door.', file: 'audio/cuts/act/' + (mid === 'stairs' ? 'stairs' : 'stack') + '.mp3', act: mid },
+        { title: label, body: lore, file: loreFile, act: 'breach' }
+      ];
     }
     function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
     function showCards(cards, done) { playSceneCut(window.__game, cards, done); }
@@ -538,12 +555,16 @@
       const saved = { pitch: cam.pitch, dist: cam.dist, yaw: cam.yaw, x: cam.target.x, y: cam.target.y, z: cam.target.z };
       if (g.setPaused) g.setPaused(true);
       if (app.hud) { if (app.hud.closePlan) app.hud.closePlan(); if (app.hud.closeMenus) app.hud.closeMenus(); }
+      document.querySelectorAll('.rotate-hint').forEach((h) => { h.classList.remove('show'); h.style.display = 'none'; });
       const root = document.createElement('div');
       root.className = 'zcut live';
       root.setAttribute('role', 'dialog');
       const h = document.createElement('h2');
       const p = document.createElement('p');
       const step = document.createElement('div');
+      const plate = document.createElement('div');
+      plate.className = 'zcap';
+      plate.append(h, p, step);
       const actions = document.createElement('div');
       actions.className = 'zcut-actions';
       const nextB = document.createElement('button');
@@ -551,7 +572,7 @@
       skipB.className = 'ghost';
       skipB.textContent = 'Skip';
       actions.append(nextB, skipB);
-      root.append(h, p, step, actions);
+      root.append(plate, actions);
       document.body.append(root);
       let i = 0, audio = null, raf = 0, t0 = 0;
       const ops = (g.ops || []).filter((o) => o.alive);
@@ -567,6 +588,7 @@
         cam.yaw = saved.yaw + k * 0.55;
       };
       const finish = () => {
+        if (window.__zuluAct && window.__zuluAct.stop) window.__zuluAct.stop();
         if (raf) cancelAnimationFrame(raf);
         stopAudio();
         root.remove();
@@ -582,6 +604,7 @@
         const c = cards[i];
         h.textContent = c.title;
         p.textContent = c.body;
+        root.dataset.act = c.act || '';
         step.textContent = (i + 1) + ' / ' + cards.length;
         nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue';
         aim(i);
@@ -607,11 +630,11 @@
       raf = requestAnimationFrame(glide);
     }
     const LORE_BEATS = [
-      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3' },
-      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3' },
-      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3' },
-      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3' },
-      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3' }
+      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3', act: 'deploy' },
+      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3', act: 'deploy' },
+      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3', act: 'stack' },
+      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3', act: 'stairs' },
+      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3', act: 'breach' }
     ];
     function starText(n) { return [1, 2, 3].map((i) => (i <= n ? '★' : '☆')).join(''); }
     function remember(save, id, n, stars) {
@@ -631,7 +654,16 @@
       orig(tagged, flow.squad, flow.entries);
       const g = window.__game;
       if (g) dress(g, flow.n);
-      if (beats && beats.length) playSceneCut(g, beats, () => {});
+      if (beats && beats.length) playSceneCut(g, beats, () => {
+        if (!app.__watchOnly) return;
+        app.__watchOnly = false;
+        app.__forceLore = false;
+        app.__stageFlow = null;
+        if (app.hud && app.hud.hide) app.hud.hide();
+        if (app.input && app.input.setGame) app.input.setGame(null);
+        if (app.endGame) app.endGame();
+        if (app.menus && app.menus.main) app.menus.main();
+      });
     }
     function stageSheet(flow, r, win) {
       const stars = win ? (r.stars | 0) : 0;
@@ -677,13 +709,22 @@
       const flow = { missionId: mission.id, n, mission, squad, entries };
       app.__stageFlow = flow;
       const cards = [];
-      if (!app.save.zuluLoreSeen) cards.push.apply(cards, LORE_BEATS);
+      if (!app.save.zuluLoreSeen || app.__forceLore) cards.push.apply(cards, LORE_BEATS);
       const info = mapInfo(mission);
-      cards.push(Object.assign({ file: 'audio/cuts/mission/m-' + mission.id + '.mp3' }, missionCard(mission), { body: mission.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' }));
-      cards.push(Object.assign({ file: 'audio/cuts/stage/s-' + slug(stageNames(mission)[n - 1]) + '.mp3' }, stageCard(mission, n)));
+      cards.push(Object.assign({ file: 'audio/cuts/mission/m-' + mission.id + '.mp3', act: 'enter' }, missionCard(mission), { body: mission.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' }));
+      cards.push.apply(cards, stageBeats(mission, n));
       launch(flow, cards);
       app.save.zuluLoreSeen = true;
       if (app.persist) app.persist();
+    };
+    window.__zuluCut = {
+      play(cards, done) { playSceneCut(window.__game, cards, done || function () {}); },
+      lore: LORE_BEATS,
+      stage: stageBeats,
+      mission(m) {
+        const info = mapInfo(m);
+        return [Object.assign({ file: 'audio/cuts/mission/m-' + m.id + '.mp3', act: 'enter' }, missionCard(m), { body: m.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' })];
+      }
     };
     app.onEnd = function (r) {
       const flow = app.__stageFlow;
@@ -708,11 +749,27 @@
     };
   }
   const OLD_VERSIONS = [
-    { id: 'a085', file: 'zulu-a085e505de.html', label: 'Map rooms and boot steps', date: 'Nov 19, 2026 · 23:05 UTC', what: 'Boot footsteps, stage-named rooms, and a wider opening view. Stages were still a label, not a rated sequence.' },
-    { id: '9a8f', file: 'zulu-9a8f4d62d0.html', label: 'Neural male radio voice', date: 'Nov 19, 2026 · 22:25 UTC', what: 'One LibriTTS male voice on every device, plus door stacks, the radio log, and the shots counter.' },
-    { id: '89ce', file: 'zulu-89ce849087.html', label: 'Door stacks and radio log', date: 'Nov 19, 2026 · 22:15 UTC', what: 'Wall-side door stacks, the radio log, and the shots counter. Radio clips were still espeak.' },
-    { id: 'f3d1', file: 'zulu-f3d1068cfa.html', label: 'Bundled voice and update notice', date: 'Nov 8, 2026 · 21:16 UTC', what: 'The first bundled male callouts, the visible build id, and the update toast.' },
-    { id: '192b', file: 'zulu-192bccc155.html', label: 'First published build', date: 'Nov 1, 2026 · 20:27 UTC', what: 'The first Pages build. Planted legs and the tactical view. No bundled voice clips.' }
+    { id: 'e408', file: 'zulu-e408cb8ca8.html', label: 'AI sandbox, first person, armoury', date: '20 Nov 2026 · 00:45 UTC', what: 'The Pages build just before the layout fix. Sandbox commander, first person, armoury extras, and the credits block.' },
+    { id: 'c275', file: 'zulu-c275bcfdd7.html', label: 'Cutscenes and the first old-build list', date: '19 Nov 2026 · 23:15 UTC', what: 'In-engine intros with a camera move, captions, and the male voice. Settings listed five older builds.' },
+    { id: 'dd4e', file: 'zulu-dd4e520013.html', label: 'Five rated stages', date: '19 Nov 2026 · 23:05 UTC', what: 'Each mission plays as five stages with their own stars. The intros were text cards.' },
+    { id: 'a085', file: 'zulu-a085e505de.html', label: 'Map rooms and boot steps', date: '19 Nov 2026 · 22:57 UTC', what: 'Boot footsteps, stage-named props, and a wider camera. One mission, not five rated stages.' },
+    { id: '9a8f', file: 'zulu-9a8f4d62d0.html', label: 'Neural male radio voice', date: '19 Nov 2026 · 22:20 UTC', what: 'One LibriTTS male voice on every device, plus door stacks, the radio log, and the shots counter.' },
+    { id: '89ce', file: 'zulu-89ce849087.html', label: 'Door stacks and radio log', date: '19 Nov 2026 · 22:10 UTC', what: 'Wall-side door stacks, the radio log, and the shots counter. Radio clips were still espeak.' },
+    { id: 'f3d1', file: 'zulu-f3d1068cfa.html', label: 'Bundled voice and update notice', date: '8 Nov 2026 · 21:08 UTC', what: 'Bundled male callouts, the visible build id, and the update toast.' },
+    { id: 'd1e8', file: 'zulu-d1e8120053.html', label: 'Bundled callouts before they were combined', date: '8 Nov 2026 · 21:10 UTC', what: 'A git commit on the way to the bundled-voice Pages build. Not a separate Pages deploy.' },
+    { id: 'fe34', file: 'zulu-fe343b3ca8.html', label: 'Update toast', date: '8 Nov 2026 · 21:05 UTC', what: 'The running build id and the update notice, before the callout files were combined in. Not a separate Pages deploy.' },
+    { id: 'c80b', file: 'zulu-c80bbd585b.html', label: 'Device male voice', date: '8 Nov 2026 · 20:43 UTC', what: 'Radio preferred an English male voice from the phone or computer. No bundled clips yet.' },
+    { id: 'c5e6', file: 'zulu-192bccc155-c5e630f.html', label: 'Male-voice preference, same cache as 1 Nov', date: '8 Nov 2026', what: 'Preferred an English male device voice while the cache id was still zulu-192bccc155. Not its own Pages deploy.' },
+    { id: '192b', file: 'zulu-192bccc155.html', label: 'Republish of the tactical game', date: '1 Nov 2026 · 20:41 UTC', what: 'First commit of the current git history. Pages deploy of the full tactical game.' },
+    { id: '2eb4', file: 'zulu-2eb47ca954.html', label: 'Hands clear of the rifle', date: '31 Oct 2026 · 21:25 UTC', what: 'Last Pages build before the 1 Nov republish. Hands held off the weapon mesh.', beta: true },
+    { id: 'd2bf', file: 'zulu-d2bf1f5ef5.html', label: 'Stance pass, Pages build failed', date: '31 Oct 2026 · 21:24 UTC', what: 'This commit was pushed and the Pages build errored, so it never went live. It can still be opened from here.', beta: true },
+    { id: '60c0', file: 'zulu-60c0df3c9e.html', label: 'Stance and crouch', date: '31 Oct 2026 · 21:24 UTC', what: 'Foot stance and a lower crouch.', beta: true },
+    { id: '1832', file: 'zulu-18325ee562.html', label: 'Republish during the beta', date: '31 Oct 2026 · 21:21 UTC', what: 'A full republish of the tactical game the evening before the current history.', beta: true },
+    { id: 'f878', file: 'zulu-f8781607df.html', label: 'Open maps, scenery, market', date: '31 Oct 2026 · 18:30 UTC', what: 'Four open maps, scenery, stage select, and a market pass.', beta: true },
+    { id: 'd388', file: 'zulu-d388dc8fe8.html', label: 'Rifle hold and breach plan', date: '31 Oct 2026 · 16:49 UTC', what: 'Two-hand rifle, preview animations, breach planning, and gun finishes.', beta: true },
+    { id: '9b21', file: 'zulu-9b214de139.html', label: 'Cameras, stacks, VIP star', date: '31 Oct 2026 · 13:16 UTC', what: 'Preview fixes, cameras, select-all, walk animation, door stacks, VIP star, and credits.', beta: true },
+    { id: 'b2e9', file: 'zulu-b2e9046fdf.html', label: 'Unit preview fix', date: '24 Oct 2026 · 20:23 UTC', what: 'Fixes the unit preview. A 26 Oct README deploy served this same game.', beta: true },
+    { id: '6fdf', file: 'zulu-6fdf9f9ca2.html', label: 'First Pages publish', date: '24 Oct 2026 · 19:51 UTC', what: 'The earliest build GitHub Pages ever served. Props are plain blocks. The tactical soldier is already in the file. No older commit exists.', beta: true }
   ];
   const SAVE_KEY = 'zulu_protocol_save_v1', SAVE_BAK = 'zulu_w8_save_backup', SAVE_RET = 'zulu_w8_return';
   function installVersions(app) {
@@ -755,13 +812,13 @@
       host.append(warn);
       const cur = document.createElement('div');
       cur.className = 'w8v-card cur';
-      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Five rated stages, in-engine cutscenes, the male voice, and this picker.</div>';
+      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Stage layouts match their names. Cutscenes show the squad moving, with captions and the male voice. Every published build is listed below, newest first. The 24 Oct 2026 file is the earliest Pages deploy. No older commit exists.</div>';
       host.append(cur);
       for (const v of OLD_VERSIONS) {
         const c = document.createElement('div');
         c.className = 'w8v-card';
         c.innerHTML = '<div><b></b> <span></span></div><div class="w8v-w"></div>';
-        c.querySelector('b').textContent = v.label;
+        c.querySelector('b').textContent = (v.beta ? 'Beta · ' : '') + v.label;
         c.querySelector('span').textContent = v.date;
         c.querySelector('.w8v-w').textContent = v.what;
         const go = document.createElement('button');
