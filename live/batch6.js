@@ -231,15 +231,42 @@
   }
 
   const SHOP = [
-    { id: 'gasmask', name: 'Gas mask', desc: 'Worn on every operator. Cuts gas damage.', price: 500, kind: 'mask' },
-    { id: 'cs', name: 'CS gas ×4', desc: 'Tear gas. Throw from the kit or the GAS button.', price: 110, kind: 'stock', n: 4 },
-    { id: 'flash', name: 'Flashbangs ×4', desc: 'More flashbangs for the armoury.', price: 80, kind: 'stock', n: 4 },
-    { id: 'frag', name: 'Frag grenades ×2', desc: 'More frags.', price: 90, kind: 'stock', n: 2 },
-    { id: 'smoke', name: 'Smoke ×4', desc: 'More smoke.', price: 70, kind: 'stock', n: 4 },
-    { id: 'charge', name: 'Breaching charges ×2', desc: 'For locked doors.', price: 120, kind: 'stock', n: 2 },
-    { id: 'medkit', name: 'Medkits ×2', desc: 'More medkits.', price: 80, kind: 'stock', n: 2 },
-    { id: 'stinger', name: 'Stingers ×2', desc: 'Hostage-safe stun grenades.', price: 100, kind: 'stock', n: 2 }
+    { id: 'gasmask', name: 'Gas mask', desc: 'A mask with lenses and a canister on every operator. CS gas does not stun them.', price: 500, kind: 'mask', color: '#1c2420', tall: 1 },
+    { id: 'cs', name: 'CS gas ×4', desc: 'Tear gas. Blocks sight and stuns anyone without a mask.', price: 110, kind: 'stock', n: 4, color: '#c6a24a', tall: 0.7 },
+    { id: 'flash', name: 'Flashbangs ×4', desc: 'Stun grenades.', price: 80, kind: 'stock', n: 4, color: '#d8d2c4', tall: 0.6 },
+    { id: 'frag', name: 'Frag grenades ×2', desc: 'Lethal grenades.', price: 90, kind: 'stock', n: 2, color: '#3d6b32', tall: 0.6 },
+    { id: 'smoke', name: 'Smoke ×4', desc: 'Hides a lane.', price: 70, kind: 'stock', n: 4, color: '#8a9098', tall: 0.6 },
+    { id: 'stinger', name: 'Stingers ×2', desc: 'Hostage-safe stun grenades.', price: 100, kind: 'stock', n: 2, color: '#c45a2a', tall: 0.6 },
+    { id: 'charge', name: 'Breaching charges ×2', desc: 'For locked doors.', price: 120, kind: 'stock', n: 2, color: '#8a3030', tall: 0.4 },
+    { id: 'lockpick', name: 'Lockpick set', desc: 'Opens a locked door quietly.', price: 160, kind: 'stock', n: 1, color: '#c8b48a', tall: 0.3 },
+    { id: 'medkit', name: 'Medkits ×2', desc: 'Stops a bleed.', price: 80, kind: 'stock', n: 2, color: '#c8d0d4', tall: 0.45 },
+    { id: 'trauma', name: 'Trauma kit', desc: 'The heavier medical pack.', price: 140, kind: 'stock', n: 1, color: '#b7c4b0', tall: 0.55 },
+    { id: 'stim', name: 'Adrenaline stim ×2', desc: 'Gets an operator moving.', price: 90, kind: 'stock', n: 2, color: '#d0e27a', tall: 0.5 },
+    { id: 'sensor', name: 'Heartbeat sensor', desc: 'Shows heartbeats through a wall.', price: 220, kind: 'stock', n: 1, color: '#7ec8c0', tall: 0.35 },
+    { id: 'drone', name: 'Recon drone', desc: 'A look over the next room.', price: 260, kind: 'stock', n: 1, color: '#d0d4d8', tall: 0.3 },
+    { id: 'ap', name: 'AP rounds', desc: 'One crate of armour-piercing ammunition.', price: 150, kind: 'stock', n: 1, color: '#c4a15a', tall: 0.5 },
+    { id: 'subsonic', name: 'Subsonic rounds', desc: 'One quieter crate.', price: 140, kind: 'stock', n: 1, color: '#6a7078', tall: 0.5 },
+    { id: 'match', name: 'Match-grade rounds', desc: 'One precise crate.', price: 160, kind: 'stock', n: 1, color: '#8a9a6a', tall: 0.5 },
+    { id: 'tracer', name: 'Tracer mix', desc: 'One crate with tracers.', price: 130, kind: 'stock', n: 1, color: '#e07030', tall: 0.5 },
+    { id: 'b_nades', name: 'Grenade crate', desc: 'A mixed crate of throwables.', price: 200, kind: 'stock', n: 1, color: '#6a7a4a', tall: 0.7 },
+    { id: 'b_breach', name: 'Breacher bundle', desc: 'Charges and lockpicks together.', price: 240, kind: 'stock', n: 1, color: '#8a5040', tall: 0.6 },
+    { id: 'b_med', name: 'Field medic pack', desc: 'Medkits, trauma, and stims.', price: 220, kind: 'stock', n: 1, color: '#d8e0dc', tall: 0.65 }
   ];
+  function thumb(color, tall) {
+    const c = document.createElement('canvas');
+    c.width = 120; c.height = 84; c.className = 'w1thumb';
+    const g = c.getContext('2d');
+    g.clearRect(0, 0, 120, 84);
+    const h = 18 + tall * 36;
+    const x = 60, y = 58;
+    g.beginPath(); g.moveTo(x, y - h); g.lineTo(x + 28, y - h - 14); g.lineTo(x + 28, y - 14); g.lineTo(x, y); g.closePath();
+    g.fillStyle = color; g.fill();
+    g.beginPath(); g.moveTo(x, y - h); g.lineTo(x - 28, y - h - 14); g.lineTo(x - 28, y - 14); g.lineTo(x, y); g.closePath();
+    g.fillStyle = '#0006'; g.fill();
+    g.beginPath(); g.moveTo(x, y - h); g.lineTo(x + 28, y - h - 14); g.lineTo(x, y - h - 28); g.lineTo(x - 28, y - h - 14); g.closePath();
+    g.fillStyle = '#fff4'; g.fill();
+    return c;
+  }
   function buy(app, item) {
     const s = app.save;
     if ((s.cash || 0) < item.price) return;
@@ -252,19 +279,21 @@
     const body = app.menus.screen('armoury-extra', 'Armoury', () => app.menus.main());
     const cash = el('p', '', 'Budget ' + (app.save.cash || 0));
     body.append(cash);
-    body.append(el('p', 'dim', 'This is support money for equipment. It does not hire operators.'));
+    body.append(el('p', 'dim', 'Support money for equipment. It does not hire operators. The same stock the Armory uses.'));
+    const grid = el('div', 'w1shop');
     for (const item of SHOP) {
-      const row = el('div', 'w8v-card');
+      const row = el('div', 'w1shop-card');
       const owned = item.kind === 'mask' && app.save.gasMask;
-      row.innerHTML = '<b></b><div class="w8v-w"></div>';
-      row.querySelector('b').textContent = item.name + ' — ' + item.price;
-      row.querySelector('.w8v-w').textContent = item.desc + (owned ? ' Owned.' : '');
-      const b = el('button', 'w8v-go', owned ? 'Owned' : 'Buy');
-      b.disabled = owned;
-      b.onclick = () => { buy(app, item); shopScreen(app); };
-      row.append(b);
-      body.append(row);
+      row.append(thumb(item.color, item.tall));
+      const b = el('b', '', item.name);
+      const d = el('div', 'w8v-w', item.desc + (owned ? ' Owned.' : '') + ' ' + item.price);
+      const btn = el('button', 'w8v-go', owned ? 'Owned' : 'Buy');
+      btn.disabled = owned;
+      btn.onclick = () => { buy(app, item); shopScreen(app); };
+      row.append(b, d, btn);
+      grid.append(row);
     }
+    body.append(grid);
   }
   function attachMasks(g) {
     if (!g || !window.__app.save.gasMask) return;
@@ -288,7 +317,15 @@
     }
   }
 
-  const CREDITS_HTML = '<div class="zcred"><h3>This build</h3><p>Radio and cutscene voice: Piper en_US-libritts-high, speaker 66, LibriTTS reader 5717 (male). LibriTTS by Heiga Zen and others, CC BY 4.0, http://www.openslr.org/60/. The Piper program and the model weights are not in the game. Cutscene lines are the same speaker.</p><p>Boot steps, room props, water bands, and the gas-mask block are drawn in code. No extra texture pack.</p><p>Older builds in Settings are earlier published copies of this same game. Returning restores the save from before you opened one.</p><p>three.js is MIT. The soldier model is Tactical Soldier by MissingTray1151, CC BY 4.0. Natural Earth map data is public domain.</p></div>';
+  const CREDITS_HTML = '<div class="zcred"><h3>Line check for this build</h3>'
+    + '<p><b>Tactical Soldier</b> — MissingTray1151, CC BY 4.0. Still the operator, hostile, hostage and VIP mesh. Not replaced.</p>'
+    + '<p><b>Weapons, helmets, vests, level props</b> — original, built in code. Parked cars, vans and trucks are the same procedural traffic meshes as the street, not a downloaded car pack. Desks, plants, pillars and containers are the level’s own prop meshes. Sofas, chairs, ramps and the gas mask are extra boxes in code. No third-party furniture pack.</p>'
+    + '<p><b>Textures</b> — the soldier atlas is still the CC BY 4.0 atlas. Walls, floors and icons are still generated here. The world map is still Natural Earth public-domain data.</p>'
+    + '<p><b>Sound effects, music, ambience, radio static, boot steps</b> — still synthesised in the browser. The track “Tensions Run High” is not included.</p>'
+    + '<p><b>Radio callouts</b> — Piper en_US-libritts-high, speaker 66, LibriTTS reader 5717 (male), CC BY 4.0, http://www.openslr.org/60/. The Piper program and the weights are not in the game. espeak-ng is used only while rendering and is not shipped. Device speechSynthesis is not used.</p>'
+    + '<p><b>Cutscene lines</b> — the same speaker and the same licence. One file per stage and for the opening. Calm pace, length scale about 1.15. Not a separate actor.</p>'
+    + '<p><b>three.js 0.170.0</b> — MIT. meshoptimizer decoder — MIT, via three.js. Build tools (esbuild, glTF Transform, sharp, tiny-inflate, topojson-client, Playwright) are not in the download.</p>'
+    + '<p><b>Older builds</b> in Settings are earlier copies of this game, including the 24 Oct 2026 Pages deploy. Opening one backs up the save and restores it on the way back.</p></div>';
 
   function boot() {
     const app = window.__app;
@@ -297,7 +334,7 @@
     if (!document.getElementById('batch6css')) {
       const st = document.createElement('style');
       st.id = 'batch6css';
-      st.textContent = '.w1sbx-bar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.4}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
+      st.textContent = '.w1sbx-bar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.45}.zcred p{margin:8px 0}.w1shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.w1shop-card{background:#14181c;border:1px solid #ffffff22;border-radius:10px;padding:8px;color:#e8efe4}.w1thumb{width:100%;height:auto;background:#0e1216;border-radius:8px}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
       document.head.append(st);
     }
     const menus = app.menus;

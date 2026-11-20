@@ -555,6 +555,9 @@
       const saved = { pitch: cam.pitch, dist: cam.dist, yaw: cam.yaw, x: cam.target.x, y: cam.target.y, z: cam.target.z };
       if (g.setPaused) g.setPaused(true);
       if (app.hud) { if (app.hud.closePlan) app.hud.closePlan(); if (app.hud.closeMenus) app.hud.closeMenus(); }
+      document.body.classList.add('zulu-cut');
+      g.__cutSprites = [];
+      if (g.env && g.env.scene) g.env.scene.traverse((o) => { if (o.isSprite && o.visible) { o.visible = false; g.__cutSprites.push(o); } });
       document.querySelectorAll('.rotate-hint').forEach((h) => { h.classList.remove('show'); h.style.display = 'none'; });
       const root = document.createElement('div');
       root.className = 'zcut live';
@@ -592,6 +595,8 @@
         if (raf) cancelAnimationFrame(raf);
         stopAudio();
         root.remove();
+        document.body.classList.remove('zulu-cut');
+        (g.__cutSprites || []).forEach((o) => { o.visible = true; });
         document.removeEventListener('keydown', onKey);
         cam.target.set(saved.x, saved.y, saved.z);
         cam.pitch = saved.pitch; cam.dist = saved.dist; cam.yaw = saved.yaw;
@@ -619,8 +624,10 @@
       }
       const glide = (now) => {
         if (!root.isConnected) return;
-        const u = Math.min(1, (now - t0) / 2800);
-        cam.yaw = saved.yaw + i * 0.55 + u * 0.35;
+        if (!(window.__zuluAct && window.__zuluAct.on)) {
+          const u = Math.min(1, (now - t0) / 2800);
+          cam.yaw = saved.yaw + i * 0.55 + u * 0.35;
+        }
         raf = requestAnimationFrame(glide);
       };
       nextB.addEventListener('click', (e) => { e.stopPropagation(); advance(); });
