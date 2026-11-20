@@ -388,6 +388,64 @@
     }
   }
 
+  function kitOf(scene) {
+    const all = [];
+    let Mesh = null;
+    scene.traverse((o) => {
+      if (!Mesh && o.isMesh && !o.isInstancedMesh && !o.isSkinnedMesh) Mesh = o.constructor;
+      if (!o.isInstancedMesh || !o.geometry || !o.geometry.attributes || !o.geometry.attributes.position) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const b = o.geometry.boundingBox;
+      all.push({ mesh: o, sx: b.max.x - b.min.x, sy: b.max.y - b.min.y, sz: b.max.z - b.min.z, minY: b.min.y });
+    });
+    const car = all.find((o) => o.sx > 3.8 && o.sx < 4.5 && o.sz > 1.45 && o.sz < 2.05 && o.sy > 0.95 && o.sy < 1.9);
+    const van = all.find((o) => o.sx > 4.5 && o.sx < 5.5 && o.sy > 1.45 && o.sy < 2.4);
+    const pillar = all.find((o) => o.sy > 2.35 && o.sy < 2.85 && o.sx < 0.85 && o.sz < 0.85);
+    const container = all.find((o) => o.sy > 2.3 && o.sy < 2.9 && o.sx > 0.85 && o.sx < 1.35 && o.sz > 0.85 && o.sz < 1.35);
+    const desk = all.find((o) => o.sx > 0.8 && o.sx < 1.2 && o.sy > 0.9 && o.sy < 1.4 && o.sz > 0.45 && o.sz < 0.9);
+    const plant = all.find((o) => o.sy > 0.95 && o.sy < 1.9 && o.sx > 0.45 && o.sx < 1.0 && o.sz > 0.45 && o.sz < 1.0 && o !== pillar && o !== desk);
+    const box = pillar || container || all.find((o) => o.sy > 0.6 && o.sx > 0.4 && o.sz > 0.4);
+    return { car, van, pillar, container, desk, plant, box, Mesh, all };
+  }
+  function solid(kit, w, h, d, color) {
+    const src = kit.box;
+    const mat = src.mesh.material.clone();
+    mat.vertexColors = false;
+    if (mat.color && mat.color.setHex) mat.color.setHex(color);
+    const m = new kit.Mesh(src.mesh.geometry, mat);
+    m.scale.set(w / src.sx, h / src.sy, d / src.sz);
+    m.position.y = -src.minY * (h / src.sy);
+    m.castShadow = true;
+    m.receiveShadow = true;
+    return m;
+  }
+  function vehicle(entry, colorHex, x, y, z, yaw) {
+    const src = entry.mesh;
+    const im = new src.constructor(src.geometry, src.material, 1);
+    if (colorHex != null && im.setColorAt && src.material && src.material.color && src.material.color.clone) {
+      const c = src.material.color.clone();
+      c.setHex(colorHex);
+      im.setColorAt(0, c);
+    }
+    const pos = src.position.clone();
+    pos.set(x, y - entry.minY, z);
+    const euler = src.rotation.clone();
+    euler.set(0, yaw || 0, 0);
+    const q = src.quaternion.clone();
+    q.setFromEuler(euler);
+    const sc = src.scale.clone();
+    sc.set(1, 1, 1);
+    const M = src.matrix.clone();
+    M.compose(pos, q, sc);
+    im.position.set(0, 0, 0);
+    im.setMatrixAt(0, M);
+    im.instanceMatrix.needsUpdate = true;
+    if (im.instanceColor) im.instanceColor.needsUpdate = true;
+    im.frustumCulled = false;
+    im.castShadow = true;
+    im.receiveShadow = true;
+    return im;
+  }
   function reshape(g, stage) {
     const L = g.level;
     const scene = g.env && g.env.scene;
@@ -466,92 +524,130 @@
     }
     punch(L, g, added);
     const roomCount = recomputeRooms(L);
+    const kit = kitOf(scene);
+    g.__kit = kit;
+    window.__kitInfo = {
+      car: !!(kit.car), van: !!(kit.van), pillar: !!(kit.pillar), desk: !!(kit.desk), plant: !!(kit.plant),
+      box: kit.box ? [+kit.box.sx.toFixed(2), +kit.box.sy.toFixed(2), +kit.box.sz.toFixed(2)] : null,
+      n: kit.all.length
+    };
     const group = empty(bits);
     group.name = 'zstage';
-    const slab = flat(bits, Math.max(4, maxx - minx + 1), 0.08, Math.max(4, maxz - minz + 1), FLOORC[shape] || 0x666666);
-    drop(slab, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 0.5, 0);
-    group.add(slab);
+    const canSolid = kit.box && kit.Mesh;
+    if (canSolid) {
+      const slab = solid(kit, Math.max(4, maxx - minx + 1), 0.06, Math.max(4, maxz - minz + 1), FLOORC[shape] || 0x666666);
+      slab.position.set((minx + maxx) / 2 + 0.5, 0.02, (minz + maxz) / 2 + 0.5);
+      group.add(slab);
+    }
     let walls = 0;
-    const wh = (x, y) => (enclosed ? 2.55 : (touchesOut(L, x, y) ? 1.05 : 2.55));
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const wh = (x, y) => (enclosed ? 2.55 : (touchesOut(L, x, y) ? 1.15 : 2.55));
+    if (canSolid) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const i = y * W + x;
       if (L.type[i] !== 1 && L.type[i] !== 2) continue;
-      const h = L.type[i] === 2 ? 0.9 : wh(x, y);
-      const wall = flat(bits, 0.92, h, 0.92, WALLC[shape] || 0xc8c2b4);
-      drop(wall, x + 0.5, y + 0.5, 0);
+      const h = L.type[i] === 2 ? 2.2 : wh(x, y);
+      const wall = solid(kit, 0.92, h, 0.92, WALLC[shape] || 0xc8c2b4);
+      wall.position.set(x + 0.5, 0, y + 0.5);
       group.add(wall);
       if (!touchesOut(L, x, y)) walls++;
     }
     const open = (x, y) => x >= 0 && y >= 0 && x < W && y < H && L.type[y * W + x] === 0 && !occ.has(y * W + x);
     let cars = 0;
     let placed = 0;
-    const ops = (g.ops || []).filter((o) => o && o.alive);
-    if (ops.length) {
-      const ox = ops.reduce((s, o) => s + o.x, 0) / ops.length;
-      const oz = ops.reduce((s, o) => s + o.z, 0) / ops.length;
-      const cx = (minx + maxx) / 2 + 0.5, cz = (minz + maxz) / 2 + 0.5;
-      const dx = cx - ox, dz = cz - oz, len = Math.hypot(dx, dz) || 1;
-      const fx = dx / len, fz = dz / len;
-      const kinds = kindsFor(shape, recipe);
-      if (shape !== 'lot') for (let i = 0; i < Math.min(5, kinds.length + 1); i++) {
-        const dist = 3.2 + i * 2.4;
-        const side = (i % 2 ? 1 : -1) * 1.6;
-        const x = ox + fx * dist + (-fz) * side;
-        const y = oz + fz * dist + fx * side;
-        if (!open(Math.floor(x), Math.floor(y))) continue;
-        const kind = kinds[i % kinds.length];
-        const p = prop(bits, kind, i + 3);
-        drop(p, x, y, Math.atan2(fx, fz));
-        group.add(p);
-        if (kind === 'car' || kind === 'van') cars++;
-        placed++;
+    const colors = [0xd8d8d8, 0x8a1e1e, 0x1c3a6e, 0x1a1c1e, 0xe0c020, 0x2f6b3a, 0xc4552a];
+    const addObj = (obj, kind) => { if (!obj) return; obj.userData.kind = kind; group.add(obj); placed++; };
+    const furn = (kind, x, z, yaw) => {
+      yaw = yaw || 0;
+      if (kind === 'desk' && kit.desk) { addObj(vehicle(kit.desk, null, x, 0, z, yaw), 'desk'); return; }
+      if (kind === 'plant' && kit.plant) { addObj(vehicle(kit.plant, null, x, 0, z, yaw), 'plant'); return; }
+      if ((kind === 'container' || kind === 'crate') && kit.container && kind === 'container') { addObj(vehicle(kit.container, colors[placed % colors.length], x, 0, z, yaw), 'container'); return; }
+      if (!canSolid) return;
+      const root = empty(bits);
+      const put = (mesh, px, py, pz) => { mesh.position.x += px; mesh.position.z += pz; mesh.position.y += py; root.add(mesh); };
+      if (kind === 'sofa') {
+        put(solid(kit, 2.2, 0.48, 0.9, 0x7a2424), 0, 0, 0);
+        put(solid(kit, 2.2, 0.75, 0.18, 0x5c1818), 0, 0.48, -0.36);
+        put(solid(kit, 0.18, 0.7, 0.9, 0x5c1818), -1.05, 0.2, 0);
+        put(solid(kit, 0.18, 0.7, 0.9, 0x5c1818), 1.05, 0.2, 0);
+      } else if (kind === 'chair') {
+        put(solid(kit, 0.52, 0.1, 0.52, 0x243044), 0, 0.46, 0);
+        put(solid(kit, 0.52, 0.62, 0.1, 0x243044), 0, 0.56, -0.22);
+        put(solid(kit, 0.08, 0.46, 0.08, 0x1a1c22), -0.2, 0, -0.2);
+        put(solid(kit, 0.08, 0.46, 0.08, 0x1a1c22), 0.2, 0, -0.2);
+        put(solid(kit, 0.08, 0.46, 0.08, 0x1a1c22), -0.2, 0, 0.2);
+        put(solid(kit, 0.08, 0.46, 0.08, 0x1a1c22), 0.2, 0, 0.2);
+      } else if (kind === 'desk') {
+        put(solid(kit, 1.7, 0.08, 0.75, 0x6b4228), 0, 0.76, 0);
+        put(solid(kit, 0.08, 0.76, 0.08, 0x3a2a1c), -0.75, 0, -0.3);
+        put(solid(kit, 0.08, 0.76, 0.08, 0x3a2a1c), 0.75, 0, -0.3);
+        put(solid(kit, 0.08, 0.76, 0.08, 0x3a2a1c), -0.75, 0, 0.3);
+        put(solid(kit, 0.08, 0.76, 0.08, 0x3a2a1c), 0.75, 0, 0.3);
+        put(solid(kit, 0.55, 0.4, 0.05, 0x141820), 0.25, 0.96, -0.05);
+      } else if (kind === 'plant') {
+        put(solid(kit, 0.4, 0.35, 0.4, 0x6b4e3a), 0, 0, 0);
+        put(solid(kit, 0.85, 1.1, 0.85, 0x2c6a34), 0, 0.55, 0);
+      } else if (kind === 'bed') {
+        put(solid(kit, 1.3, 0.45, 2.05, 0xe4e0d8), 0, 0, 0);
+        put(solid(kit, 1.2, 0.22, 0.42, 0xf4f1ea), 0, 0.45, -0.75);
+      } else if (kind === 'container') {
+        put(solid(kit, 2.4, 2.5, 1.1, colors[placed % colors.length]), 0, 0, 0);
+      } else if (kind === 'barrier' || kind === 'sandbag') {
+        put(solid(kit, 1.5, 0.85, 0.4, kind === 'sandbag' ? 0x6e6848 : 0xd5d7da), 0, 0, 0);
+      } else if (kind === 'barrel') {
+        put(solid(kit, 0.55, 0.9, 0.55, 0x2f4a38), 0, 0, 0);
+      } else {
+        put(solid(kit, 0.85, 0.7, 0.85, 0x8a6238), 0, 0, 0);
       }
-    }
-    if (shape === 'lot') {
-      for (let y = minz + 3; y < maxz - 3; y += 7) {
-        const line = prop(bits, 'line', 0);
-        drop(line, (minx + maxx) / 2 + 0.5, y + 3.4, Math.PI / 2);
-        line.scale.z *= Math.max(3, (maxx - minx) / 2.6);
-        group.add(line);
-        for (let x = minx + 2; x < maxx - 4; x += 6) {
-          if (!open(x, y) || !open(x + 2, y)) continue;
-          const car = prop(bits, (cars % 6 === 0) ? 'van' : 'car', cars);
-          drop(car, x + 1.6, y + 0.8, 0);
+      root.position.set(x, 0, z);
+      root.rotation.y = yaw;
+      addObj(root, kind);
+    };
+    if (shape === 'lot' && kit.car) {
+      const floorAt = (x, z) => {
+        const ix = Math.floor(x), iz = Math.floor(z);
+        if (ix < 2 || iz < 2 || ix >= W - 2 || iz >= H - 2) return false;
+        return L.type[iz * W + ix] === 0;
+      };
+      let n = 0;
+      for (let z = minz + 2; z < maxz - 2; z += 3.6) {
+        if (canSolid) {
+          const line = solid(kit, Math.max(6, maxx - minx - 2), 0.045, 0.1, 0xf4f1e8);
+          line.position.set((minx + maxx) / 2 + 0.5, 0.08, z + 1.5);
+          group.add(line);
+        }
+        for (let x = minx + 2; x < maxx - 4; x += 4.6) {
+          if (!floorAt(x + 1.5, z + 0.6)) continue;
+          const src = (n % 6 === 0 && kit.van) ? kit.van : kit.car;
+          const car = vehicle(src, colors[n % colors.length], x + 1.8, 0.1, z + 0.6, Math.PI / 2);
+          car.userData.kind = 'car';
           group.add(car);
           cars++;
           placed++;
+          n++;
         }
       }
-      const ramp = flat(bits, 6.5, 0.28, 3.2, 0x6e6a62);
-      ramp.rotation.x = -0.28;
-      const holder = empty(bits);
-      holder.add(ramp);
-      holder.userData.kind = 'ramp';
-      drop(holder, maxx - 3, minz + 2, 0);
-      group.add(holder);
+      if (canSolid) for (let i = 0; i < 6; i++) {
+        const step = solid(kit, 3.4, 0.32, 1.15, 0x8d8880);
+        step.position.set(maxx - 2.4, i * 0.32, minz + 1.6 + i * 1.15);
+        step.userData.kind = 'ramp';
+        group.add(step);
+      }
     } else {
-      const kinds = kindsFor(shape, recipe);
-      const step = shape === 'rows' ? 4 : shape === 'offices' ? 4 : 5;
+      const kinds = kindsFor(shape, recipe).filter((k) => k !== 'car' && k !== 'van' && k !== 'line' && k !== 'pillar');
+      const step = shape === 'rows' ? 5 : shape === 'offices' ? 5 : 6;
+      const cx = (minx + maxx) / 2 + 0.5, cz = (minz + maxz) / 2 + 0.5;
+      if (shape === 'hall' || shape === 'single' || shape === 'offices') {
+        furn('desk', cx, cz, 0);
+        furn(shape === 'offices' ? 'chair' : 'sofa', cx, cz + 2.2, 0);
+        furn('plant', cx + 2.4, cz - 1.2, 0);
+        if (shape === 'offices') furn('chair', cx + 1.2, cz + 1.1, 0.4);
+      }
       let n = 0;
-      for (let y = minz + 2; y < maxz - 1; y += step) for (let x = minx + 2; x < maxx - 1; x += step) {
-        if (!open(x, y)) continue;
-        const kind = kinds[n % kinds.length];
-        const p = prop(bits, kind, n);
-        drop(p, x + 0.5, y + 0.5, (n % 2) ? Math.PI / 2 : 0);
-        group.add(p);
-        if (kind === 'car' || kind === 'van') cars++;
-        placed++;
+      for (let z = minz + 3; z < maxz - 2; z += step) for (let x = minx + 3; x < maxx - 2; x += step) {
+        if (!open(x, z)) continue;
+        if (Math.hypot(x - cx, z - cz) < 3) continue;
+        furn(kinds[n % kinds.length] || 'crate', x + 0.5, z + 0.5, (n % 2) ? 1.2 : 0);
         n++;
       }
-    }
-    if (shape === 'hall' || shape === 'single') {
-      const desk = prop(bits, 'desk', 0);
-      drop(desk, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 0.5, 0);
-      group.add(desk);
-      const sofa = prop(bits, shape === 'hall' ? 'sofa' : 'chair', 1);
-      drop(sofa, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 3.4, 0);
-      group.add(sofa);
-      placed += 2;
     }
     scene.add(group);
     L.__zuluShaped = true;
@@ -565,10 +661,41 @@
     }
     const cam = g.env.cam;
     if (cam) {
-      cam.pitch = 0.58;
-      cam.dist = 22;
+      cam.pitch = 0.72;
+      cam.dist = 30;
     }
     g.zuluLayout = stage;
+    try { wearMasks(g); armGas(g); } catch (err) { window.__maskErr = String(err && err.stack || err); }
+  }
+  function wearMasks(g) {
+    const kit = g.__kit;
+    if (!kit || !kit.box || !kit.Mesh || !window.__app || !window.__app.save || !window.__app.save.gasMask) return;
+    for (const op of g.ops || []) {
+      const head = op.ch && op.ch.B && op.ch.B.head;
+      if (!head || head.getObjectByName('zmask')) continue;
+      op.gasMask = true;
+      const face = solid(kit, 0.2, 0.13, 0.07, 0x1a221c);
+      face.name = 'zmask';
+      face.position.set(0, 0.01, 0.12);
+      const l1 = solid(kit, 0.055, 0.04, 0.025, 0x9fd4ea);
+      l1.position.set(-0.045, 0.03, 0.16);
+      const l2 = solid(kit, 0.055, 0.04, 0.025, 0x9fd4ea);
+      l2.position.set(0.045, 0.03, 0.16);
+      const can = solid(kit, 0.07, 0.12, 0.055, 0x2c3333);
+      can.position.set(0.13, -0.02, 0.05);
+      head.add(face, l1, l2, can);
+    }
+  }
+  function armGas(g) {
+    if (!g.detonate || g.__gasWrap) return;
+    g.__gasWrap = true;
+    const det = g.detonate.bind(g);
+    g.detonate = function (unit, kind, x, z) {
+      const saved = (this.ops || []).filter((o) => o.gasMask && o.alive).map((o) => [o, o.stun || 0]);
+      const ret = det(unit, kind, x, z);
+      if (kind === 'cs') for (let i = 0; i < saved.length; i++) saved[i][0].stun = saved[i][1];
+      return ret;
+    };
   }
 
   function nearestFloor(L, x, z) {
@@ -641,28 +768,33 @@
     },
     pieces(g) {
       const scene = g.env.scene;
+      const kit = g.__kit;
       const bits = bitsOf(scene);
-      if (!bits) return;
+      if (!bits || !kit || !kit.box || !kit.Mesh) return;
       let group = scene.getObjectByName('zact');
       if (!group) { group = empty(bits); group.name = 'zact'; scene.add(group); }
       while (group.children && group.children.length) group.remove(group.children[0]);
+      const base = this.spot && this.spot.stairs ? this.spot.stairs : { x: g.level.W / 2, z: g.level.H / 2 };
+      this.stairBase = { x: base.x, z: base.z };
       const stairs = empty(bits);
-      for (let i = 0; i < 6; i++) {
-        const step = flat(bits, 2.2, 0.18, 0.55, 0xc8c2b4);
-        step.position.set(0, i * 0.18, i * 0.5);
+      for (let i = 0; i < 8; i++) {
+        const step = solid(kit, 3.2, 0.3, 0.78, 0xd5d0c6);
+        step.position.set(0, i * 0.3, i * 0.72);
         stairs.add(step);
       }
+      stairs.position.set(base.x, 0, base.z);
       stairs.userData.kind = 'stairs';
-      if (this.spot && this.spot.stairs) drop(stairs, this.spot.stairs.x, this.spot.stairs.z, 0);
       stairs.visible = false;
       group.add(stairs);
       this.stairs = stairs;
-      const door = flat(bits, 0.12, 2.2, 1.1, 0x6b4a2e);
+      const door = solid(kit, 0.14, 2.3, 1.15, 0x6b4128);
+      const doorAt = this.spot && this.spot.door ? this.spot.door : base;
+      door.position.set(doorAt.x + 1.2, 0, doorAt.z);
       door.userData.kind = 'door';
-      if (this.spot && this.spot.door) drop(door, this.spot.door.x + 0.8, this.spot.door.z, 0);
       door.visible = false;
       group.add(door);
       this.door = door;
+      this.doorAt = { x: doorAt.x + 1.2, z: doorAt.z };
     },
     setPhase(name) {
       this.phase = name || 'deploy';
@@ -694,15 +826,30 @@
         s.o.mv = 'sprint';
         s.o.__cutY = this.phase === 'stairs' ? Math.sin(u * Math.PI) * 1.15 : 0;
       });
-      this.doorAng = (this.phase === 'breach' && u > 0.25) ? Math.min(1.5, (u - 0.25) * 2.2) : 0;
+      this.doorAng = (this.phase === 'breach' && u > 0.2) ? Math.min(1.6, (u - 0.2) * 2.4) : 0;
       const cam = this.g.env && this.g.env.cam;
       const ops = this.saved;
+      if (this.phase === 'stairs' && this.stairBase) {
+        const b = this.stairBase;
+        const count = ops.length || 1;
+        const step = Math.min(7, Math.floor(u * 8));
+        ops.forEach((s, i) => {
+          s.o.x = b.x + (i - (count - 1) / 2) * 0.45;
+          s.o.z = b.z + 0.2 + step * 0.72;
+          s.o.__cutY = 0.2 + step * 0.3;
+          s.o.ang = 0;
+          s.o.moving = u < 0.98;
+          s.o.mv = 'sprint';
+        });
+      }
       if (cam && ops.length) {
         const x = ops.reduce((sum, s) => sum + s.o.x, 0) / ops.length;
         const z = ops.reduce((sum, s) => sum + s.o.z, 0) / ops.length;
-        cam.target.set(x, 0.4, z);
-        cam.dist = 11;
-        cam.pitch = 0.62;
+        const y = this.phase === 'stairs' ? 1.3 : 0.8;
+        cam.target.set(x, y, z);
+        cam.dist = this.phase === 'stairs' ? 9 : 12;
+        cam.pitch = 0.42;
+        cam.yaw = (this.phase === 'breach' || this.phase === 'stairs') ? 1.2 : 0.9;
       }
     },
     stop() {
@@ -784,7 +931,7 @@
     if (!document.getElementById('batch7css')) {
       const st = document.createElement('style');
       st.id = 'batch7css';
-      st.textContent = '.zreplay{display:block;width:100%;text-align:left;margin-top:4px}';
+      st.textContent = '.zreplay{display:block;width:100%;text-align:left;margin-top:4px}body.zulu-cut #hud,body.zulu-cut .zfps-btn,body.zulu-cut .planmarks,body.zulu-cut .zstage,body.zulu-cut .w1sbx-bar{visibility:hidden!important}';
       document.head.append(st);
     }
     const menus = app.menus;
