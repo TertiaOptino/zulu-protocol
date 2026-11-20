@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-e408cb8ca8";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-d49172a7d6";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:var(--tx);user-select:none;-webkit-user-select:none;touch-action:none;overscroll-behavior:none}
 #cv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;touch-action:none}
@@ -5802,6 +5802,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       cam.dist = Math.max(24, Math.min(cam.dist || 24, 32));
     }
     g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id };
+    if (window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
@@ -5902,7 +5903,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     if (!document.getElementById('batch3css')) {
       const st = document.createElement('style');
       st.id = 'batch3css';
-      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:80;background:#07090ccc;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut.live{background:linear-gradient(to top,#07090cf0 0%,#07090c00 46%);justify-content:flex-end;padding-bottom:max(16px,env(safe-area-inset-bottom))}.w8v-card{border:1px solid #334;border-radius:10px;padding:10px 12px;margin:8px 0;background:#12161c}.w8v-card.cur{border-color:#e37b22}.w8v-go{font:700 14px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:8px;padding:8px 12px;min-height:40px}.w8v-warn{background:#3a2a12;border-radius:8px;padding:8px 10px;margin-bottom:8px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
+      st.textContent = '.zstage{font:700 12px/1.2 system-ui,sans-serif;color:#d7e4c8;background:#12160fd0;border:1px solid #6a8a55;border-radius:8px;padding:4px 8px;pointer-events:none;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.zcut{position:fixed;inset:0;z-index:600;background:#07090ccc;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;text-align:center;gap:12px}.zcut.live{z-index:600;background:transparent;justify-content:flex-start;align-items:stretch;padding:max(8px,env(safe-area-inset-top)) 8px 0;pointer-events:none}.zcut .zcap{pointer-events:auto;background:#07090cf8;color:#fff;border:2px solid #ffb060;border-radius:12px;padding:12px 14px;width:min(680px,calc(100vw - 16px));max-height:42vh;overflow:auto;box-shadow:0 10px 28px #000;text-align:left}.zcut.live h2{color:#fff;font:800 22px/1.2 system-ui,sans-serif;margin:0 0 6px}.zcut.live p{color:#f4f7f2;font:600 17px/1.35 system-ui,sans-serif;margin:0;max-width:none}.zcut .zcut-actions{pointer-events:auto}body:has(.zcut) .rotate-hint{display:none!important}.w8v-card{border:1px solid #334;border-radius:10px;padding:10px 12px;margin:8px 0;background:#12161c}.w8v-card.cur{border-color:#e37b22}.w8v-go{font:700 14px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:8px;padding:8px 12px;min-height:40px}.w8v-warn{background:#3a2a12;border-radius:8px;padding:8px 10px;margin-bottom:8px}.zcut h2{font:800 28px/1.15 system-ui,sans-serif;margin:0;max-width:18em}.zcut p{font:18px/1.45 system-ui,sans-serif;max-width:38em;margin:0}.zcut .zcut-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.zcut button{font:700 16px system-ui,sans-serif;background:#e37b22;color:#1a1008;border:0;border-radius:10px;padding:12px 18px;min-height:44px}.zcut button.ghost{background:#1c241c;color:#d7e4c8;border:1px solid #6a8a55}.zaar{position:fixed;inset:0;z-index:70;background:#07090cf2;color:#e8efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}.zaar h2{margin:0;font:800 26px system-ui,sans-serif}.zaar .stars{font-size:28px;letter-spacing:4px;color:#f0c14a}@media (max-width:420px),(max-height:420px){.zstage{font-size:10px;padding:2px 6px}.zcut h2{font-size:22px}.zcut p{font-size:15px}}';
       document.head.append(st);
     }
     frameCam();
@@ -5930,7 +5931,23 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const label = stageNames(mission)[n - 1];
       const info = mapInfo(mission);
       const recipe = recipeFor(label, info.scenery);
-      return { title: 'Stage ' + n + ' of 5 · ' + label, body: (CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing that belongs to another stage is left in these rooms.' };
+      const lore = window.__zuluStageLine && window.__zuluStageLine(mission, n, label, info);
+      return { title: 'Stage ' + n + ' of 5 · ' + label, body: lore || ((CONTENTS[recipe] || 'The rooms match this place.') + ' Nothing from another stage is left here.') };
+    }
+    function stageAct(label) {
+      return /floors \d|mezzanine|bridge deck|executive floor|crew quarters/i.test(label || '') ? 'stairs' : 'stack';
+    }
+    function stageBeats(mission, n) {
+      const label = stageNames(mission)[n - 1];
+      const info = mapInfo(mission);
+      const lore = stageCard(mission, n).body;
+      const loreFile = (window.__zuluStageAudio && window.__zuluStageAudio(mission, n, label)) || ('audio/cuts/stage/s-' + slug(label) + '.mp3');
+      const mid = stageAct(label);
+      return [
+        { title: label, body: 'The team is moving in.', file: 'audio/cuts/act/deploy.mp3', act: 'deploy' },
+        { title: label, body: mid === 'stairs' ? 'They take the stairs.' : 'They stack on the door.', file: 'audio/cuts/act/' + (mid === 'stairs' ? 'stairs' : 'stack') + '.mp3', act: mid },
+        { title: label, body: lore, file: loreFile, act: 'breach' }
+      ];
     }
     function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
     function showCards(cards, done) { playSceneCut(window.__game, cards, done); }
@@ -5940,12 +5957,16 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const saved = { pitch: cam.pitch, dist: cam.dist, yaw: cam.yaw, x: cam.target.x, y: cam.target.y, z: cam.target.z };
       if (g.setPaused) g.setPaused(true);
       if (app.hud) { if (app.hud.closePlan) app.hud.closePlan(); if (app.hud.closeMenus) app.hud.closeMenus(); }
+      document.querySelectorAll('.rotate-hint').forEach((h) => { h.classList.remove('show'); h.style.display = 'none'; });
       const root = document.createElement('div');
       root.className = 'zcut live';
       root.setAttribute('role', 'dialog');
       const h = document.createElement('h2');
       const p = document.createElement('p');
       const step = document.createElement('div');
+      const plate = document.createElement('div');
+      plate.className = 'zcap';
+      plate.append(h, p, step);
       const actions = document.createElement('div');
       actions.className = 'zcut-actions';
       const nextB = document.createElement('button');
@@ -5953,7 +5974,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       skipB.className = 'ghost';
       skipB.textContent = 'Skip';
       actions.append(nextB, skipB);
-      root.append(h, p, step, actions);
+      root.append(plate, actions);
       document.body.append(root);
       let i = 0, audio = null, raf = 0, t0 = 0;
       const ops = (g.ops || []).filter((o) => o.alive);
@@ -5969,6 +5990,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
         cam.yaw = saved.yaw + k * 0.55;
       };
       const finish = () => {
+        if (window.__zuluAct && window.__zuluAct.stop) window.__zuluAct.stop();
         if (raf) cancelAnimationFrame(raf);
         stopAudio();
         root.remove();
@@ -5984,6 +6006,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
         const c = cards[i];
         h.textContent = c.title;
         p.textContent = c.body;
+        root.dataset.act = c.act || '';
         step.textContent = (i + 1) + ' / ' + cards.length;
         nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue';
         aim(i);
@@ -6009,11 +6032,11 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       raf = requestAnimationFrame(glide);
     }
     const LORE_BEATS = [
-      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3' },
-      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3' },
-      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3' },
-      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3' },
-      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3' }
+      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3', act: 'deploy' },
+      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3', act: 'deploy' },
+      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3', act: 'stack' },
+      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3', act: 'stairs' },
+      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3', act: 'breach' }
     ];
     function starText(n) { return [1, 2, 3].map((i) => (i <= n ? '★' : '☆')).join(''); }
     function remember(save, id, n, stars) {
@@ -6033,7 +6056,16 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       orig(tagged, flow.squad, flow.entries);
       const g = window.__game;
       if (g) dress(g, flow.n);
-      if (beats && beats.length) playSceneCut(g, beats, () => {});
+      if (beats && beats.length) playSceneCut(g, beats, () => {
+        if (!app.__watchOnly) return;
+        app.__watchOnly = false;
+        app.__forceLore = false;
+        app.__stageFlow = null;
+        if (app.hud && app.hud.hide) app.hud.hide();
+        if (app.input && app.input.setGame) app.input.setGame(null);
+        if (app.endGame) app.endGame();
+        if (app.menus && app.menus.main) app.menus.main();
+      });
     }
     function stageSheet(flow, r, win) {
       const stars = win ? (r.stars | 0) : 0;
@@ -6079,13 +6111,22 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       const flow = { missionId: mission.id, n, mission, squad, entries };
       app.__stageFlow = flow;
       const cards = [];
-      if (!app.save.zuluLoreSeen) cards.push.apply(cards, LORE_BEATS);
+      if (!app.save.zuluLoreSeen || app.__forceLore) cards.push.apply(cards, LORE_BEATS);
       const info = mapInfo(mission);
-      cards.push(Object.assign({ file: 'audio/cuts/mission/m-' + mission.id + '.mp3' }, missionCard(mission), { body: mission.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' }));
-      cards.push(Object.assign({ file: 'audio/cuts/stage/s-' + slug(stageNames(mission)[n - 1]) + '.mp3' }, stageCard(mission, n)));
+      cards.push(Object.assign({ file: 'audio/cuts/mission/m-' + mission.id + '.mp3', act: 'enter' }, missionCard(mission), { body: mission.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' }));
+      cards.push.apply(cards, stageBeats(mission, n));
       launch(flow, cards);
       app.save.zuluLoreSeen = true;
       if (app.persist) app.persist();
+    };
+    window.__zuluCut = {
+      play(cards, done) { playSceneCut(window.__game, cards, done || function () {}); },
+      lore: LORE_BEATS,
+      stage: stageBeats,
+      mission(m) {
+        const info = mapInfo(m);
+        return [Object.assign({ file: 'audio/cuts/mission/m-' + m.id + '.mp3', act: 'enter' }, missionCard(m), { body: m.title + '. ' + info.name + (info.place ? ', ' + info.place : '') + '.' })];
+      }
     };
     app.onEnd = function (r) {
       const flow = app.__stageFlow;
@@ -6110,11 +6151,27 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     };
   }
   const OLD_VERSIONS = [
-    { id: 'a085', file: 'zulu-a085e505de.html', label: 'Map rooms and boot steps', date: 'Nov 19, 2026 · 23:05 UTC', what: 'Boot footsteps, stage-named rooms, and a wider opening view. Stages were still a label, not a rated sequence.' },
-    { id: '9a8f', file: 'zulu-9a8f4d62d0.html', label: 'Neural male radio voice', date: 'Nov 19, 2026 · 22:25 UTC', what: 'One LibriTTS male voice on every device, plus door stacks, the radio log, and the shots counter.' },
-    { id: '89ce', file: 'zulu-89ce849087.html', label: 'Door stacks and radio log', date: 'Nov 19, 2026 · 22:15 UTC', what: 'Wall-side door stacks, the radio log, and the shots counter. Radio clips were still espeak.' },
-    { id: 'f3d1', file: 'zulu-f3d1068cfa.html', label: 'Bundled voice and update notice', date: 'Nov 8, 2026 · 21:16 UTC', what: 'The first bundled male callouts, the visible build id, and the update toast.' },
-    { id: '192b', file: 'zulu-192bccc155.html', label: 'First published build', date: 'Nov 1, 2026 · 20:27 UTC', what: 'The first Pages build. Planted legs and the tactical view. No bundled voice clips.' }
+    { id: 'e408', file: 'zulu-e408cb8ca8.html', label: 'AI sandbox, first person, armoury', date: '20 Nov 2026 · 00:45 UTC', what: 'The Pages build just before the layout fix. Sandbox commander, first person, armoury extras, and the credits block.' },
+    { id: 'c275', file: 'zulu-c275bcfdd7.html', label: 'Cutscenes and the first old-build list', date: '19 Nov 2026 · 23:15 UTC', what: 'In-engine intros with a camera move, captions, and the male voice. Settings listed five older builds.' },
+    { id: 'dd4e', file: 'zulu-dd4e520013.html', label: 'Five rated stages', date: '19 Nov 2026 · 23:05 UTC', what: 'Each mission plays as five stages with their own stars. The intros were text cards.' },
+    { id: 'a085', file: 'zulu-a085e505de.html', label: 'Map rooms and boot steps', date: '19 Nov 2026 · 22:57 UTC', what: 'Boot footsteps, stage-named props, and a wider camera. One mission, not five rated stages.' },
+    { id: '9a8f', file: 'zulu-9a8f4d62d0.html', label: 'Neural male radio voice', date: '19 Nov 2026 · 22:20 UTC', what: 'One LibriTTS male voice on every device, plus door stacks, the radio log, and the shots counter.' },
+    { id: '89ce', file: 'zulu-89ce849087.html', label: 'Door stacks and radio log', date: '19 Nov 2026 · 22:10 UTC', what: 'Wall-side door stacks, the radio log, and the shots counter. Radio clips were still espeak.' },
+    { id: 'f3d1', file: 'zulu-f3d1068cfa.html', label: 'Bundled voice and update notice', date: '8 Nov 2026 · 21:08 UTC', what: 'Bundled male callouts, the visible build id, and the update toast.' },
+    { id: 'd1e8', file: 'zulu-d1e8120053.html', label: 'Bundled callouts before they were combined', date: '8 Nov 2026 · 21:10 UTC', what: 'A git commit on the way to the bundled-voice Pages build. Not a separate Pages deploy.' },
+    { id: 'fe34', file: 'zulu-fe343b3ca8.html', label: 'Update toast', date: '8 Nov 2026 · 21:05 UTC', what: 'The running build id and the update notice, before the callout files were combined in. Not a separate Pages deploy.' },
+    { id: 'c80b', file: 'zulu-c80bbd585b.html', label: 'Device male voice', date: '8 Nov 2026 · 20:43 UTC', what: 'Radio preferred an English male voice from the phone or computer. No bundled clips yet.' },
+    { id: 'c5e6', file: 'zulu-192bccc155-c5e630f.html', label: 'Male-voice preference, same cache as 1 Nov', date: '8 Nov 2026', what: 'Preferred an English male device voice while the cache id was still zulu-192bccc155. Not its own Pages deploy.' },
+    { id: '192b', file: 'zulu-192bccc155.html', label: 'Republish of the tactical game', date: '1 Nov 2026 · 20:41 UTC', what: 'First commit of the current git history. Pages deploy of the full tactical game.' },
+    { id: '2eb4', file: 'zulu-2eb47ca954.html', label: 'Hands clear of the rifle', date: '31 Oct 2026 · 21:25 UTC', what: 'Last Pages build before the 1 Nov republish. Hands held off the weapon mesh.', beta: true },
+    { id: 'd2bf', file: 'zulu-d2bf1f5ef5.html', label: 'Stance pass, Pages build failed', date: '31 Oct 2026 · 21:24 UTC', what: 'This commit was pushed and the Pages build errored, so it never went live. It can still be opened from here.', beta: true },
+    { id: '60c0', file: 'zulu-60c0df3c9e.html', label: 'Stance and crouch', date: '31 Oct 2026 · 21:24 UTC', what: 'Foot stance and a lower crouch.', beta: true },
+    { id: '1832', file: 'zulu-18325ee562.html', label: 'Republish during the beta', date: '31 Oct 2026 · 21:21 UTC', what: 'A full republish of the tactical game the evening before the current history.', beta: true },
+    { id: 'f878', file: 'zulu-f8781607df.html', label: 'Open maps, scenery, market', date: '31 Oct 2026 · 18:30 UTC', what: 'Four open maps, scenery, stage select, and a market pass.', beta: true },
+    { id: 'd388', file: 'zulu-d388dc8fe8.html', label: 'Rifle hold and breach plan', date: '31 Oct 2026 · 16:49 UTC', what: 'Two-hand rifle, preview animations, breach planning, and gun finishes.', beta: true },
+    { id: '9b21', file: 'zulu-9b214de139.html', label: 'Cameras, stacks, VIP star', date: '31 Oct 2026 · 13:16 UTC', what: 'Preview fixes, cameras, select-all, walk animation, door stacks, VIP star, and credits.', beta: true },
+    { id: 'b2e9', file: 'zulu-b2e9046fdf.html', label: 'Unit preview fix', date: '24 Oct 2026 · 20:23 UTC', what: 'Fixes the unit preview. A 26 Oct README deploy served this same game.', beta: true },
+    { id: '6fdf', file: 'zulu-6fdf9f9ca2.html', label: 'First Pages publish', date: '24 Oct 2026 · 19:51 UTC', what: 'The earliest build GitHub Pages ever served. Props are plain blocks. The tactical soldier is already in the file. No older commit exists.', beta: true }
   ];
   const SAVE_KEY = 'zulu_protocol_save_v1', SAVE_BAK = 'zulu_w8_save_backup', SAVE_RET = 'zulu_w8_return';
   function installVersions(app) {
@@ -6157,13 +6214,13 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       host.append(warn);
       const cur = document.createElement('div');
       cur.className = 'w8v-card cur';
-      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Five rated stages, in-engine cutscenes, the male voice, and this picker.</div>';
+      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Stage layouts match their names. Cutscenes show the squad moving, with captions and the male voice. Every published build is listed below, newest first. The 24 Oct 2026 file is the earliest Pages deploy. No older commit exists.</div>';
       host.append(cur);
       for (const v of OLD_VERSIONS) {
         const c = document.createElement('div');
         c.className = 'w8v-card';
         c.innerHTML = '<div><b></b> <span></span></div><div class="w8v-w"></div>';
-        c.querySelector('b').textContent = v.label;
+        c.querySelector('b').textContent = (v.beta ? 'Beta · ' : '') + v.label;
         c.querySelector('span').textContent = v.date;
         c.querySelector('.w8v-w').textContent = v.what;
         const go = document.createElement('button');
@@ -6570,6 +6627,858 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     window.addEventListener('keyup', (e) => { if (fps.keys) fps.keys[e.code] = false; });
     window.__zuluFps = fps;
     window.__zuluSandbox = { start: (map, n) => startSandbox(app, map, n), screen: () => sandboxScreen(app) };
+  }
+  const wait = setInterval(() => { if (window.__app && window.__app.menus) { clearInterval(wait); boot(); } }, 40);
+})();
+
+</script>
+<script>
+/* Stage layouts, action cutscenes, replayable intros. */
+(function () {
+  const STAGE_LORE = {
+    embassy: [
+      "The Ankara job starts at the front gate. The team is here to get inside before the compound locks down.",
+      "The motor pool holds the embassy vehicles. They are crossing it to reach the consular rooms.",
+      "The consular wing is the public side of the embassy. The intel they came for is in this part of the building.",
+      "The residence is where the people they came to get were being held.",
+      "The chancery is the secure office. This is the last part of the embassy job before the extraction."
+    ],
+    warehouse: [
+      "The loading yard is the way into the Hamburg warehouse. The team came in off the dock.",
+      "The cold store is the chilled room. They are clearing it on the way through the warehouse.",
+      "The container stacks are the freight rows. The smugglers were using this floor.",
+      "The office block is where the warehouse paperwork is. The team is looking for the shipment record.",
+      "The dispatch office is the last room. This is where the warehouse job ends."
+    ],
+    kandahar: [
+      "The outer wall is the edge of the mud-brick compound. The team is coming in from the desert.",
+      "The stables are inside the wall. They are moving through the stalls toward the courtyard.",
+      "The courtyard is the open middle of the compound. This is the crossing to the inner rooms.",
+      "The safe rooms are where people were kept. The team is here to get them out.",
+      "The inner compound is the last walled yard. The Kandahar job finishes here."
+    ],
+    oilrig: [
+      "The helideck is where the team landed on Platform Skadi, over open water.",
+      "The pump room is the machinery space under the deck. They are passing through it.",
+      "The drill floor is the open work deck. The well gear is here.",
+      "The crew quarters are the bunks. They are clearing the rooms the crew used.",
+      "The wellhead is the last station on the rig. The team is here to finish and get off."
+    ],
+    subway: [
+      "The street entrance is the way down into the Seoul station. The team is entering from the street.",
+      "The service tunnels run under the platforms. They are using them to move without the concourse.",
+      "The ticket hall is the public room of the station. This is the crossing to the platforms.",
+      "Platform B is the train platform. The team is moving along it.",
+      "The concourse is the last hall. The station job ends here."
+    ],
+    hkoffice: [
+      "The lobby is the open ground floor of Harbour Tower. The team is coming in from the street.",
+      "The car park is the open parking level under the tower. Rows of cars, pillars, and a ramp. No offices.",
+      "Floors 12 to 20 are office floors. The team is climbing and clearing the desks.",
+      "Floors 30 to 40 are the upper offices. They are still moving up the tower.",
+      "The executive floor is the top of the job. This is the last office in the tower."
+    ],
+    bank: [
+      "The lobby is the open public hall of Banco Central. The team is entering the bank here.",
+      "The underground car park is one open parking level. Parked cars, pillars, a ramp, and bay lines. It is not an office.",
+      "The trading floor is the open desk floor above the garage. The team is crossing it toward the vault.",
+      "The vault corridor is the last hall before the strongroom.",
+      "The vault floor is the strongroom. The bank job finishes here."
+    ],
+    ship: [
+      "The gangway is the way onto MV Esperanza. The team is boarding from the dock.",
+      "The cargo hold is the container deck below. They are moving through the freight.",
+      "The main deck is the open deck. This is the crossing to the bridge.",
+      "The bridge deck is the level under the wheelhouse. They are coming up.",
+      "The bridge is the wheelhouse. The ship job ends here."
+    ],
+    nairobi: [
+      "The perimeter is the edge of the consulate annex. The team is coming in from the city.",
+      "The garage is the parking level. Cars and pillars, not offices.",
+      "The admin wing is the office side of the annex. They are clearing the desks.",
+      "The records room is where the files are. The team is here for the papers.",
+      "The annex archive is the last store. The Nairobi job finishes here."
+    ],
+    rio: [
+      "The dock gate is the entrance to the Porto Maravilha depot. The team is coming in from the quay.",
+      "The truck bay is the open loading floor. Vans and pallets, not offices.",
+      "The warehouse floor is the freight hall. Containers and crates.",
+      "The mezzanine is the upper walk over the floor. They are moving up.",
+      "The depot office is the last room. The Rio job ends here."
+    ],
+    forest: [
+      "Pine Ridge is the open approach through the Black Forest. The team is moving in under the trees.",
+      "Pine Camp is the camp in the trees. Bunks and crates, not a city office.",
+      "The lodge grounds are the open ground around the lodge.",
+      "The woodshed trail is the path past the shed. They are following it.",
+      "Ridge Road is the track out. The forest job finishes on this road."
+    ],
+    valley: [
+      "The orchard edge is the way into the Helmand farm. The team is coming through the trees.",
+      "The patrol track is the dirt road across the farm.",
+      "The irrigation canals are the water cuts through the fields.",
+      "The farmhouse is the house. Rooms, a table, and beds. This is the building they came for.",
+      "The farm gate is the way out. The valley job ends at the gate."
+    ],
+    port: [
+      "The terminal gate is the entrance to the container terminal. The team is coming in from the road.",
+      "The control tower is the tower room over the yard.",
+      "The container stacks are the freight rows on the quay.",
+      "The quayside is the open edge by the water.",
+      "The harbour office is the last room. The port job ends here."
+    ],
+    ranch: [
+      "The paddocks are the open horse fields. Fences, not offices.",
+      "The bunkhouse is the crew bunk room.",
+      "The acacia line is the tree line across the ranch.",
+      "The ranch house is the house. Rooms and furniture that belong in a house.",
+      "The ranch yard is the open yard. The ranch job finishes here."
+    ],
+    killhouse: [
+      "Lane 1 is the first shooting lane on the Fort Liberty range. Training starts here.",
+      "The shoothouse is the room-clearing house. Walls, doorways, and lanes.",
+      "Lane 2 is the second range lane.",
+      "Lane 3 is the third range lane.",
+      "The final range is the last lane. Training ends here."
+    ]
+  };
+
+  function shapeFor(label, recipe, scenery) {
+    const s = String(label || '').toLowerCase();
+    if (/car park|motor pool|garage/.test(s)) return 'lot';
+    if (/shoothouse/.test(s)) return 'rooms';
+    if (/lane|final range/.test(s)) return 'lanes';
+    if (/corridor|tunnel/.test(s)) return 'corridor';
+    if (/stable|acacia/.test(s)) return 'stalls';
+    if (/platform/.test(s) && (scenery === 'citynight' || scenery === 'subway')) return 'hall';
+    if (/trading|lobby|concourse|ticket|consular|entrance|mezzanine|hall/.test(s)) return 'hall';
+    if (/office|chancery|admin|records|dispatch|executive|floors/.test(s)) return 'offices';
+    if (/residence|farmhouse|quarters|bunkhouse|safe room|archive|house/.test(s)) return 'rooms';
+    if (/container|cargo|warehouse floor|hold/.test(s)) return 'rows';
+    if (/pump|cold|the bridge|vault floor|control tower/.test(s)) return 'single';
+    if (/deck|heli|wellhead|drill/.test(s)) return 'deck';
+    if (/gangway|quay|dock|loading|yard|gate|perimeter|outer wall|paddock|ridge|track|orchard|courtyard|camp|trail|road|canal|compound|bay|bridge|lodge/.test(s)) return 'open';
+    if (recipe === 'parking') return 'lot';
+    if (recipe === 'office' || recipe === 'exec') return 'offices';
+    if (recipe === 'vault') return 'corridor';
+    if (recipe === 'containers') return 'rows';
+    return 'hall';
+  }
+
+  function kindsFor(shape, recipe) {
+    if (shape === 'lot') return ['car'];
+    if (shape === 'rows') return ['container', 'crate', 'barrel', 'pallet'];
+    if (shape === 'offices') return ['desk', 'chair'];
+    if (shape === 'rooms') return ['bed', 'sofa', 'table'];
+    if (shape === 'hall') return recipe === 'office' ? ['desk', 'chair'] : ['desk', 'sofa', 'chair', 'plant', 'bench'];
+    if (shape === 'stalls') return ['stall', 'trough', 'crate'];
+    if (shape === 'lanes') return ['barrier', 'sandbag'];
+    if (shape === 'corridor') return ['crate', 'barrel', 'barrier'];
+    if (shape === 'deck') return ['winch', 'crate', 'barrel', 'barrier'];
+    if (shape === 'single') {
+      if (recipe === 'bridge') return ['helm', 'desk', 'chair'];
+      if (recipe === 'vault') return ['barrier', 'crate'];
+      if (recipe === 'cold') return ['rack', 'crate'];
+      if (recipe === 'pump' || recipe === 'drill') return ['pump', 'pipe', 'barrel'];
+      return ['desk', 'crate', 'chair'];
+    }
+    if (recipe === 'loading') return ['van', 'pallet', 'crate', 'barrier'];
+    if (recipe === 'checkpoint') return ['barrier', 'sandbag', 'console'];
+    return ['barrier', 'bench', 'plant', 'crate'];
+  }
+
+  const WALLC = { lot: 0xb7b2a8, hall: 0xd5cfc3, offices: 0xded8d0, rooms: 0xc4b5a4, rows: 0x8a8178, open: 0x8d8458, lanes: 0x6e7268, stalls: 0x7a6244, corridor: 0x8e9398, single: 0x6a7076, deck: 0x667078 };
+  const FLOORC = { lot: 0x34383e, hall: 0xc8bfb0, offices: 0xb1aaa2, rooms: 0x8a7564, rows: 0x5c564e, open: 0x66744a, lanes: 0x4c5148, stalls: 0x6b5a3e, corridor: 0x5e656c, single: 0x4a5158, deck: 0x5c656e };
+
+  function bitsOf(scene) {
+    let donor = null;
+    scene.traverse((o) => {
+      const n = o.isMesh && o.geometry && o.geometry.attributes && o.geometry.attributes.position && o.geometry.attributes.position.count;
+      if (!n || !o.material || o.material.transparent) return;
+      if (n <= 36 && (!donor || n < donor.geometry.attributes.position.count)) donor = o;
+    });
+    if (!donor) return null;
+    donor.geometry.computeBoundingBox();
+    const bb = donor.geometry.boundingBox;
+    return { donor, sx: Math.max(0.05, bb.max.x - bb.min.x), sy: Math.max(0.05, bb.max.y - bb.min.y), sz: Math.max(0.05, bb.max.z - bb.min.z) };
+  }
+  function empty(bits) {
+    const Obj = Object.getPrototypeOf(bits.donor.constructor.prototype).constructor;
+    return new Obj();
+  }
+  function flat(bits, w, h, d, color) {
+    const src = bits.donor;
+    const mat = src.material.clone();
+    if (mat.color && mat.color.set) mat.color.set(color);
+    mat.map = null;
+    mat.needsUpdate = true;
+    const m = new src.constructor(src.geometry, mat);
+    m.scale.set(w / bits.sx, h / bits.sy, d / bits.sz);
+    m.castShadow = true;
+    m.receiveShadow = true;
+    return m;
+  }
+  function drop(root, x, z, rot) {
+    root.rotation.y = rot || 0;
+    root.position.set(x, 0.09, z);
+    root.updateMatrixWorld(true);
+    let minY = Infinity;
+    root.traverse((o) => {
+      if (!o.isMesh || !o.geometry) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox;
+      const e = o.matrixWorld.elements;
+      for (const lx of [bb.min.x, bb.max.x]) for (const ly of [bb.min.y, bb.max.y]) for (const lz of [bb.min.z, bb.max.z]) {
+        const wy = e[4] * lx + e[5] * ly + e[6] * lz + e[13];
+        if (wy < minY) minY = wy;
+      }
+    });
+    if (minY < Infinity) root.position.y += 0.09 - minY;
+  }
+  function prop(bits, kind, n) {
+    const root = empty(bits);
+    const put = (mesh, x, y, z) => { mesh.position.set(x, y, z); root.add(mesh); };
+    if (kind === 'car' || kind === 'van') {
+      const colors = [0x1c3a6e, 0x8a1e1e, 0xd0d0d0, 0x1a1a1a, 0x2f6b3a, 0xc4552a];
+      const body = kind === 'van' ? 0x3a4550 : colors[(n || 0) % colors.length];
+      const len = kind === 'van' ? 4.6 : 3.8;
+      put(flat(bits, len, 1.15, 1.75, body), 0, 0.7, 0);
+      put(flat(bits, len * 0.42, 0.85, 1.55, 0xd5e7f2), kind === 'van' ? 0.15 : -0.2, 1.55, 0);
+      for (const [x, z] of [[-len * 0.32, 0.8], [len * 0.3, 0.8], [-len * 0.32, -0.8], [len * 0.3, -0.8]]) put(flat(bits, 0.62, 0.62, 0.28, 0x111111), x, 0.32, z);
+    } else if (kind === 'desk' || kind === 'console' || kind === 'helm') {
+      put(flat(bits, 2.2, 0.12, 0.8, kind === 'helm' ? 0x243038 : 0x8a5a32), 0, 0.9, 0);
+      put(flat(bits, 2.2, 0.9, 0.12, 0x4a3018), 0, 0.45, -0.34);
+      put(flat(bits, 0.1, 0.9, 0.8, 0x3a2a1c), -1.05, 0.45, 0);
+      put(flat(bits, 0.1, 0.9, 0.8, 0x3a2a1c), 1.05, 0.45, 0);
+    } else if (kind === 'chair') {
+      put(flat(bits, 0.5, 0.1, 0.5, 0x2a3340), 0, 0.5, 0);
+      put(flat(bits, 0.5, 0.7, 0.1, 0x2a3340), 0, 0.85, -0.2);
+    } else if (kind === 'sofa') {
+      put(flat(bits, 2.1, 0.5, 0.8, 0x8a2424), 0, 0.35, 0);
+      put(flat(bits, 2.1, 0.8, 0.16, 0x6a1818), 0, 0.9, -0.32);
+    } else if (kind === 'bed') {
+      put(flat(bits, 1.2, 0.35, 2.0, 0xd8d2c8), 0, 0.25, 0);
+      put(flat(bits, 1.15, 0.16, 0.45, 0xf4f1ea), 0, 0.5, -0.7);
+    } else if (kind === 'table') put(flat(bits, 1.2, 0.08, 0.7, 0x5a3e28), 0, 0.72, 0);
+    else if (kind === 'crate' || kind === 'pallet') put(flat(bits, 0.8, 0.6, 0.8, kind === 'pallet' ? 0x8a6238 : 0xa07a45), 0, 0.3, 0);
+    else if (kind === 'barrel') put(flat(bits, 0.5, 0.8, 0.5, 0x2f4a38), 0, 0.4, 0);
+    else if (kind === 'container') put(flat(bits, 2.4, 1.25, 1.05, [0xb4532a, 0x2e5a7a, 0x4a6a3a, 0x8a8a8a][(n || 0) % 4]), 0, 0.62, 0);
+    else if (kind === 'barrier' || kind === 'sandbag') put(flat(bits, 1.4, 0.5, 0.4, kind === 'sandbag' ? 0x6b6a52 : 0xd0d2d6), 0, 0.25, 0);
+    else if (kind === 'pipe' || kind === 'rack') put(flat(bits, 2.2, 0.22, 0.22, 0x8a9098), 0, 1.1, 0);
+    else if (kind === 'pump' || kind === 'winch') put(flat(bits, 1.0, 0.8, 0.7, 0xc4552a), 0, 0.4, 0);
+    else if (kind === 'bench') put(flat(bits, 1.4, 0.12, 0.42, 0x4a4038), 0, 0.46, 0);
+    else if (kind === 'stall') put(flat(bits, 1.6, 1.2, 0.1, 0x6b5334), 0, 0.6, 0);
+    else if (kind === 'trough') put(flat(bits, 1.3, 0.4, 0.45, 0x5c6560), 0, 0.25, 0);
+    else if (kind === 'plant') put(flat(bits, 0.4, 1.1, 0.4, 0x2f6b3a), 0, 0.55, 0);
+    else if (kind === 'line') put(flat(bits, 0.12, 0.04, 2.4, 0xf4f1e8), 0, 0.02, 0);
+    else if (kind === 'pillar') put(flat(bits, 0.7, 2.6, 0.7, 0xc8c2b4), 0, 1.3, 0);
+    else put(flat(bits, 0.6, 0.5, 0.6, 0x666666), 0, 0.25, 0);
+    root.userData.kind = kind;
+    return root;
+  }
+
+  function touchesOut(L, x, y) {
+    const W = L.W, H = L.H;
+    if (x <= 0 || y <= 0 || x >= W - 1 || y >= H - 1) return true;
+    const n = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    for (let k = 0; k < n.length; k++) {
+      const nx = x + n[k][0], ny = y + n[k][1];
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H) return true;
+      if (L.ext && L.ext[ny * W + nx]) return true;
+    }
+    return false;
+  }
+  function occupied(g, L) {
+    const s = new Set();
+    const add = (x, z, rad) => {
+      const ix = Math.floor(x), iz = Math.floor(z);
+      for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) {
+        const nx = ix + dx, nz = iz + dz;
+        if (L.inb ? L.inb(nx, nz) : (nx >= 0 && nz >= 0 && nx < L.W && nz < L.H)) s.add(nz * L.W + nx);
+      }
+    };
+    const units = [].concat(g.ops || [], g.enemies || [], g.civs || []);
+    for (let i = 0; i < units.length; i++) if (units[i] && units[i].x != null) add(units[i].x, units[i].z, 1);
+    if (L.zones) for (const k in L.zones) for (const c of L.zones[k] || []) if (c) add(c[0], c[1], 0);
+    if (L.markers) for (const k in L.markers) for (const c of L.markers[k] || []) if (c) add(c[0], c[1], 0);
+    return s;
+  }
+  function hideShell(scene, L) {
+    scene.updateMatrixWorld(true);
+    scene.traverse((o) => {
+      if (!o.isMesh || o.isSkinnedMesh || o.isInstancedMesh || !o.geometry) return;
+      const nm = o.name || '';
+      if (nm === 'zstage' || nm === 'zmove' || nm.indexOf('b3') === 0) return;
+      let p = o.parent, actor = false;
+      while (p) {
+        if (p.isSkinnedMesh || p.name === 'zstage' || p.name === 'zact') return;
+        if (p.children && p.children.some((c) => c.isSkinnedMesh)) actor = true;
+        p = p.parent;
+      }
+      if (actor) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox;
+      if (!bb) return;
+      const fw = (bb.max.x - bb.min.x) * Math.abs(o.scale.x || 1);
+      const fd = (bb.max.z - bb.min.z) * Math.abs(o.scale.z || 1);
+      const fh = (bb.max.y - bb.min.y) * Math.abs(o.scale.y || 1);
+      if (fh < 0.6 || fh > 8) return;
+      if (Math.max(fw, fd) < 8 || Math.max(fw, fd) > 80) return;
+      const x0 = bb.min.x, x1 = bb.max.x, z0 = bb.min.z, z1 = bb.max.z;
+      if (x1 < 1 || x0 > L.W - 1 || z1 < 1 || z0 > L.H - 1) return;
+      o.visible = false;
+    });
+  }
+  function recomputeRooms(L) {
+    if (!L.room) return 0;
+    const W = L.W, H = L.H, N = W * H;
+    for (let i = 0; i < N; i++) L.room[i] = (L.ext && L.ext[i]) ? 0 : -1;
+    let rid = 1;
+    for (let i = 0; i < N; i++) {
+      if (L.room[i] !== -1) continue;
+      const t = L.type[i];
+      if (t === 1 || t === 2 || t === 5) continue;
+      const q = [i];
+      L.room[i] = rid;
+      while (q.length) {
+        const c = q.pop();
+        const x = c % W, y = (c / W) | 0;
+        const nxt = [x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1, y > 0 ? c - W : -1, y < H - 1 ? c + W : -1];
+        for (let k = 0; k < nxt.length; k++) {
+          const n = nxt[k];
+          if (n < 0 || L.room[n] !== -1) continue;
+          const tt = L.type[n];
+          if (tt === 1 || tt === 2 || tt === 5) continue;
+          L.room[n] = rid;
+          q.push(n);
+        }
+      }
+      rid++;
+    }
+    for (const d of L.doors || []) if (d.sides) d.rooms = d.sides.map(([x, y]) => (y >= 0 && x >= 0 && y < H && x < W) ? L.room[y * W + x] : -1);
+    return rid - 1;
+  }
+  function punch(L, g, added) {
+    const W = L.W, H = L.H, N = W * H;
+    const pass = (i) => { const t = L.type[i]; return t === 0 || t === 5; };
+    const reach = (from) => {
+      const seen = new Uint8Array(N);
+      const q = [from];
+      seen[from] = 1;
+      while (q.length) {
+        const c = q.pop();
+        const x = c % W, y = (c / W) | 0;
+        const nxt = [x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1, y > 0 ? c - W : -1, y < H - 1 ? c + W : -1];
+        for (let k = 0; k < nxt.length; k++) {
+          const n = nxt[k];
+          if (n < 0 || seen[n] || !pass(n)) continue;
+          seen[n] = 1;
+          q.push(n);
+        }
+      }
+      return seen;
+    };
+    const seeds = [];
+    const units = [].concat(g.ops || [], g.enemies || [], g.civs || []);
+    for (let i = 0; i < units.length; i++) {
+      const u = units[i];
+      if (!u || u.x == null) continue;
+      const x = Math.floor(u.x), y = Math.floor(u.z);
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      const id = y * W + x;
+      if (pass(id)) seeds.push(id);
+    }
+    if (!seeds.length) return;
+    let seen = reach(seeds[0]);
+    for (let s = 1; s < seeds.length; s++) {
+      const goal = seeds[s];
+      if (seen[goal]) continue;
+      const prev = new Int32Array(N);
+      prev.fill(-1);
+      const q = [goal];
+      prev[goal] = goal;
+      let hit = -1;
+      while (q.length && hit < 0) {
+        const c = q.shift();
+        const x = c % W, y = (c / W) | 0;
+        const nxt = [x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1, y > 0 ? c - W : -1, y < H - 1 ? c + W : -1];
+        for (let k = 0; k < nxt.length; k++) {
+          const n = nxt[k];
+          if (n < 0 || prev[n] !== -1) continue;
+          if (!(pass(n) || added.has(n))) continue;
+          prev[n] = c;
+          if (seen[n]) { hit = n; break; }
+          q.push(n);
+        }
+      }
+      if (hit >= 0) {
+        let c = hit;
+        let guard = 0;
+        while (c !== goal && c >= 0 && guard++ < N) {
+          if (added.has(c)) { L.type[c] = 0; added.delete(c); }
+          c = prev[c];
+        }
+        seen = reach(seeds[0]);
+      }
+    }
+  }
+
+  function reshape(g, stage) {
+    const L = g.level;
+    const scene = g.env && g.env.scene;
+    if (!L || !L.type || !scene || L.__zuluShaped) return;
+    const bits = bitsOf(scene);
+    if (!bits) return;
+    const label = stage && stage.label;
+    const recipe = stage && stage.recipe;
+    const shape = shapeFor(label, recipe, stage && stage.scenery);
+    const enclosed = shape === 'lot' || shape === 'hall' || shape === 'offices' || shape === 'rooms' || shape === 'corridor' || shape === 'single' || shape === 'lanes' || shape === 'stalls' || shape === 'rows';
+    const W = L.W, H = L.H;
+    const old = scene.getObjectByName('zstage');
+    if (old) scene.remove(old);
+    hideShell(scene, L);
+    const occ = occupied(g, L);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const t = L.type[i];
+      if ((t === 1 || t === 2) && !touchesOut(L, x, y)) L.type[i] = 0;
+      else if ((t === 3 || t === 4) && !(L.ext && L.ext[i])) L.type[i] = 0;
+    }
+    const kept = [];
+    if (L.doorAt && L.doorAt.clear) L.doorAt.clear();
+    for (const d of L.doors || []) {
+      const sides = d.sides || [];
+      const ext = sides.some(([x, y]) => x < 0 || y < 0 || x >= W || y >= H || (L.ext && L.ext[y * W + x]));
+      if (enclosed && ext) {
+        kept.push(d);
+        if (L.doorAt) L.doorAt.set(d.i, d);
+        if (d.mesh) d.mesh.traverse((o) => { o.visible = true; });
+      } else {
+        L.type[d.i] = 0;
+        d.state = 'open';
+        if (d.mesh) d.mesh.visible = false;
+      }
+    }
+    L.doors = kept;
+    const added = new Set();
+    const tryWall = (x, y) => {
+      if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1) return;
+      const i = y * W + x;
+      if (L.ext && L.ext[i]) return;
+      if (L.type[i] !== 0) return;
+      if (occ.has(i) || touchesOut(L, x, y)) return;
+      L.type[i] = 1;
+      added.add(i);
+    };
+    let minx = W, maxx = 0, minz = H, maxz = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      if (L.ext && L.ext[i]) continue;
+      if (x < minx) minx = x;
+      if (x > maxx) maxx = x;
+      if (y < minz) minz = y;
+      if (y > maxz) maxz = y;
+    }
+    if (maxx <= minx) { minx = 2; maxx = W - 3; minz = 2; maxz = H - 3; }
+    if (shape === 'lot') {
+      for (let y = minz + 3; y < maxz - 2; y += 7) for (let x = minx + 3; x < maxx - 2; x += 8) tryWall(x, y);
+    } else if (shape === 'offices' || shape === 'rooms') {
+      const sx = shape === 'rooms' ? 10 : 8;
+      const sz = shape === 'rooms' ? 8 : 6;
+      for (let x = minx + sx - 2; x < maxx - 2; x += sx) for (let y = minz + 1; y < maxz; y++) if ((y - minz) % sz !== 3) tryWall(x, y);
+      for (let y = minz + sz - 1; y < maxz - 2; y += sz) for (let x = minx + 1; x < maxx; x++) if ((x - minx) % sx !== 4) tryWall(x, y);
+    } else if (shape === 'corridor') {
+      const mid = ((minz + maxz) / 2) | 0;
+      for (let y = minz + 1; y < maxz; y++) {
+        if (Math.abs(y - mid) !== 2) continue;
+        for (let x = minx + 1; x < maxx; x++) if (x % 6 !== 0) tryWall(x, y);
+      }
+    } else if (shape === 'lanes') {
+      for (let x = minx + 4; x < maxx - 1; x += 5) for (let y = minz + 3; y < maxz - 3; y++) tryWall(x, y);
+    } else if (shape === 'stalls') {
+      const mid = ((minz + maxz) / 2) | 0;
+      for (let x = minx + 3; x < maxx; x += 4) for (let y = minz + 1; y < maxz; y++) if (Math.abs(y - mid) > 1 && y % 5 !== 0) tryWall(x, y);
+    }
+    punch(L, g, added);
+    const roomCount = recomputeRooms(L);
+    const group = empty(bits);
+    group.name = 'zstage';
+    const slab = flat(bits, Math.max(4, maxx - minx + 1), 0.08, Math.max(4, maxz - minz + 1), FLOORC[shape] || 0x666666);
+    drop(slab, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 0.5, 0);
+    group.add(slab);
+    let walls = 0;
+    const wh = (x, y) => (enclosed ? 2.55 : (touchesOut(L, x, y) ? 1.05 : 2.55));
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      if (L.type[i] !== 1 && L.type[i] !== 2) continue;
+      const h = L.type[i] === 2 ? 0.9 : wh(x, y);
+      const wall = flat(bits, 0.92, h, 0.92, WALLC[shape] || 0xc8c2b4);
+      drop(wall, x + 0.5, y + 0.5, 0);
+      group.add(wall);
+      if (!touchesOut(L, x, y)) walls++;
+    }
+    const open = (x, y) => x >= 0 && y >= 0 && x < W && y < H && L.type[y * W + x] === 0 && !occ.has(y * W + x);
+    let cars = 0;
+    let placed = 0;
+    const ops = (g.ops || []).filter((o) => o && o.alive);
+    if (ops.length) {
+      const ox = ops.reduce((s, o) => s + o.x, 0) / ops.length;
+      const oz = ops.reduce((s, o) => s + o.z, 0) / ops.length;
+      const cx = (minx + maxx) / 2 + 0.5, cz = (minz + maxz) / 2 + 0.5;
+      const dx = cx - ox, dz = cz - oz, len = Math.hypot(dx, dz) || 1;
+      const fx = dx / len, fz = dz / len;
+      const kinds = kindsFor(shape, recipe);
+      if (shape !== 'lot') for (let i = 0; i < Math.min(5, kinds.length + 1); i++) {
+        const dist = 3.2 + i * 2.4;
+        const side = (i % 2 ? 1 : -1) * 1.6;
+        const x = ox + fx * dist + (-fz) * side;
+        const y = oz + fz * dist + fx * side;
+        if (!open(Math.floor(x), Math.floor(y))) continue;
+        const kind = kinds[i % kinds.length];
+        const p = prop(bits, kind, i + 3);
+        drop(p, x, y, Math.atan2(fx, fz));
+        group.add(p);
+        if (kind === 'car' || kind === 'van') cars++;
+        placed++;
+      }
+    }
+    if (shape === 'lot') {
+      for (let y = minz + 3; y < maxz - 3; y += 7) {
+        const line = prop(bits, 'line', 0);
+        drop(line, (minx + maxx) / 2 + 0.5, y + 3.4, Math.PI / 2);
+        line.scale.z *= Math.max(3, (maxx - minx) / 2.6);
+        group.add(line);
+        for (let x = minx + 2; x < maxx - 4; x += 6) {
+          if (!open(x, y) || !open(x + 2, y)) continue;
+          const car = prop(bits, (cars % 6 === 0) ? 'van' : 'car', cars);
+          drop(car, x + 1.6, y + 0.8, 0);
+          group.add(car);
+          cars++;
+          placed++;
+        }
+      }
+      const ramp = flat(bits, 6.5, 0.28, 3.2, 0x6e6a62);
+      ramp.rotation.x = -0.28;
+      const holder = empty(bits);
+      holder.add(ramp);
+      holder.userData.kind = 'ramp';
+      drop(holder, maxx - 3, minz + 2, 0);
+      group.add(holder);
+    } else {
+      const kinds = kindsFor(shape, recipe);
+      const step = shape === 'rows' ? 4 : shape === 'offices' ? 4 : 5;
+      let n = 0;
+      for (let y = minz + 2; y < maxz - 1; y += step) for (let x = minx + 2; x < maxx - 1; x += step) {
+        if (!open(x, y)) continue;
+        const kind = kinds[n % kinds.length];
+        const p = prop(bits, kind, n);
+        drop(p, x + 0.5, y + 0.5, (n % 2) ? Math.PI / 2 : 0);
+        group.add(p);
+        if (kind === 'car' || kind === 'van') cars++;
+        placed++;
+        n++;
+      }
+    }
+    if (shape === 'hall' || shape === 'single') {
+      const desk = prop(bits, 'desk', 0);
+      drop(desk, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 0.5, 0);
+      group.add(desk);
+      const sofa = prop(bits, shape === 'hall' ? 'sofa' : 'chair', 1);
+      drop(sofa, (minx + maxx) / 2 + 0.5, (minz + maxz) / 2 + 3.4, 0);
+      group.add(sofa);
+      placed += 2;
+    }
+    scene.add(group);
+    L.__zuluShaped = true;
+    if (stage) {
+      stage.shape = shape;
+      stage.cars = cars;
+      stage.interiorWalls = walls;
+      stage.rooms = roomCount;
+      stage.placed = placed;
+      stage.enclosed = enclosed;
+    }
+    const cam = g.env.cam;
+    if (cam) {
+      cam.pitch = 0.58;
+      cam.dist = 22;
+    }
+    g.zuluLayout = stage;
+  }
+
+  function nearestFloor(L, x, z) {
+    const W = L.W, H = L.H;
+    const ix = Math.max(0, Math.min(W - 1, Math.floor(x)));
+    const iz = Math.max(0, Math.min(H - 1, Math.floor(z)));
+    if (L.type[iz * W + ix] === 0) return { x: ix + 0.5, z: iz + 0.5 };
+    for (let r = 1; r < 14; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+      const nx = ix + dx, nz = iz + dz;
+      if (nx < 0 || nz < 0 || nx >= W || nz >= H) continue;
+      if (L.type[nz * W + nx] === 0) return { x: nx + 0.5, z: nz + 0.5 };
+    }
+    return { x: ix + 0.5, z: iz + 0.5 };
+  }
+  const Act = {
+    on: false, g: null, phase: '', t: 0, saved: [], routes: {}, door: null, stairs: null, doorAng: 0,
+    start(g) {
+      if (!g || !g.ops) return;
+      this.stop();
+      this.g = g;
+      this.on = true;
+      this.t = 0;
+      this.phase = '';
+      this.saved = g.ops.filter((o) => o.alive).map((o) => ({ o, x: o.x, z: o.z, ang: o.ang }));
+      const self = this;
+      g.step = function (dt) { try { self.tick(dt); } catch (e) { window.__actErr = String(e && e.stack || e); } };
+      if (!g.__syncCut) {
+        g.__syncCut = g.syncMeshes.bind(g);
+        g.syncMeshes = function (rdt) {
+          g.__syncCut(rdt);
+          for (const o of g.ops || []) if (o.ch && o.ch.root && o.__cutY) o.ch.root.position.y = o.__cutY;
+          if (self.door) self.door.rotation.y = self.doorAng || 0;
+        };
+      }
+      this.layout(g);
+      this.pieces(g);
+      if (g.setPaused) g.setPaused(false);
+    },
+    layout(g) {
+      const L = g.level;
+      const ops = this.saved.map((s) => s.o);
+      let minz = L.H, maxz = 0, minx = L.W, maxx = 0, n = 0;
+      for (let y = 0; y < L.H; y++) for (let x = 0; x < L.W; x++) {
+        if (L.type[y * L.W + x] !== 0) continue;
+        if (L.ext && L.ext[y * L.W + x]) continue;
+        if (y < minz) minz = y;
+        if (y > maxz) maxz = y;
+        if (x < minx) minx = x;
+        if (x > maxx) maxx = x;
+        n++;
+      }
+      if (!n) { minx = 2; maxx = L.W - 3; minz = 2; maxz = L.H - 3; }
+      const cx = (minx + maxx) / 2, cz = (minz + maxz) / 2;
+      const count = ops.length || 1;
+      const fan = (x, z, along) => ops.map((_, i) => nearestFloor(L, x + (along ? (i - (count - 1) / 2) * 0.95 : 0), z + (along ? 0 : (i - (count - 1) / 2) * 0.8)));
+      const south = fan(cx, minz + 1.2, true);
+      const mid = fan(cx, cz - 1, true);
+      const file = fan(cx + 0.4, cz, false);
+      const through = fan(cx + 0.4, cz + 4, false);
+      const up = fan(cx - 1, cz + 3, false);
+      this.routes = {
+        deploy: ops.map((_, i) => [south[i], mid[i]]),
+        enter: ops.map((_, i) => [south[i], mid[i]]),
+        stack: ops.map((_, i) => [mid[i], file[i]]),
+        stairs: ops.map((_, i) => [file[i] || mid[i], up[i]]),
+        breach: ops.map((_, i) => [file[i] || mid[i], through[i]])
+      };
+      this.spot = { stairs: up[0], door: file[0] || mid[0] };
+    },
+    pieces(g) {
+      const scene = g.env.scene;
+      const bits = bitsOf(scene);
+      if (!bits) return;
+      let group = scene.getObjectByName('zact');
+      if (!group) { group = empty(bits); group.name = 'zact'; scene.add(group); }
+      while (group.children && group.children.length) group.remove(group.children[0]);
+      const stairs = empty(bits);
+      for (let i = 0; i < 6; i++) {
+        const step = flat(bits, 2.2, 0.18, 0.55, 0xc8c2b4);
+        step.position.set(0, i * 0.18, i * 0.5);
+        stairs.add(step);
+      }
+      stairs.userData.kind = 'stairs';
+      if (this.spot && this.spot.stairs) drop(stairs, this.spot.stairs.x, this.spot.stairs.z, 0);
+      stairs.visible = false;
+      group.add(stairs);
+      this.stairs = stairs;
+      const door = flat(bits, 0.12, 2.2, 1.1, 0x6b4a2e);
+      door.userData.kind = 'door';
+      if (this.spot && this.spot.door) drop(door, this.spot.door.x + 0.8, this.spot.door.z, 0);
+      door.visible = false;
+      group.add(door);
+      this.door = door;
+    },
+    setPhase(name) {
+      this.phase = name || 'deploy';
+      this.t = 0;
+      if (this.stairs) this.stairs.visible = this.phase === 'stairs';
+      if (this.door) this.door.visible = this.phase === 'stack' || this.phase === 'breach';
+      const route = this.routes && this.routes[this.phase];
+      if (route) this.saved.forEach((s, i) => {
+        const a = route[i] && route[i][0];
+        if (!a) return;
+        s.o.x = a.x; s.o.z = a.z;
+      });
+    },
+    tick(dt) {
+      if (!this.on || !this.g) return;
+      this.t += dt;
+      const dur = this.phase === 'breach' ? 3.2 : 2.8;
+      const u = Math.min(1, this.t / Math.max(0.2, dur));
+      const route = (this.routes && this.routes[this.phase]) || this.routes.deploy;
+      this.saved.forEach((s, i) => {
+        const seg = route && route[i];
+        if (!seg) return;
+        const a = seg[0], b = seg[1];
+        s.o.x = a.x + (b.x - a.x) * u;
+        s.o.z = a.z + (b.z - a.z) * u;
+        const dx = b.x - a.x, dz = b.z - a.z;
+        if (Math.hypot(dx, dz) > 0.05) s.o.ang = Math.atan2(dx, dz);
+        s.o.moving = u < 0.98;
+        s.o.mv = 'sprint';
+        s.o.__cutY = this.phase === 'stairs' ? Math.sin(u * Math.PI) * 1.15 : 0;
+      });
+      this.doorAng = (this.phase === 'breach' && u > 0.25) ? Math.min(1.5, (u - 0.25) * 2.2) : 0;
+      const cam = this.g.env && this.g.env.cam;
+      const ops = this.saved;
+      if (cam && ops.length) {
+        const x = ops.reduce((sum, s) => sum + s.o.x, 0) / ops.length;
+        const z = ops.reduce((sum, s) => sum + s.o.z, 0) / ops.length;
+        cam.target.set(x, 0.4, z);
+        cam.dist = 11;
+        cam.pitch = 0.62;
+      }
+    },
+    stop() {
+      if (!this.on && !this.saved.length) return;
+      for (const s of this.saved) {
+        s.o.x = s.x; s.o.z = s.z; s.o.ang = s.ang; s.o.__cutY = 0; s.o.moving = false;
+      }
+      if (this.door) this.door.visible = false;
+      if (this.stairs) this.stairs.visible = false;
+      const g = this.g;
+      if (g && g.step) delete g.step;
+      if (g && g.setPaused) g.setPaused(true);
+      this.on = false;
+      this.saved = [];
+      this.phase = '';
+    }
+  };
+
+  function watchCuts() {
+    const root = document.querySelector('.zcut.live');
+    const g = window.__game;
+    if (!root || !g || !g.ops) { if (Act.on) Act.stop(); return; }
+    if (!Act.on || Act.g !== g) Act.start(g);
+    const act = root.dataset.act || 'deploy';
+    if (act !== Act.phase) Act.setPhase(act);
+  }
+
+  function stageLine(mission, n, label, info) {
+    const map = mission && mission.map;
+    const lines = STAGE_LORE[map];
+    const why = lines && lines[n - 1];
+    if (!why) return label + '. ' + ((info && info.name) || '');
+    return label + '. ' + why;
+  }
+  function stageAudio(mission, n) {
+    const map = (mission && mission.map) || 'stage';
+    return 'audio/cuts/stage/s-' + map + '-' + n + '.mp3';
+  }
+
+  function squadOf(app) {
+    const save = app.save || {};
+    const ids = Object.keys(save.rosters || {});
+    const unit = save.unit && save.rosters[save.unit] ? save.unit : ids[0];
+    let list = ((save.rosters || {})[unit] || []).filter((o) => o && o.team >= 0);
+    if (!list.length) {
+      for (let i = 0; i < ids.length && !list.length; i++) list = (save.rosters[ids[i]] || []).filter((o) => o && o.team >= 0);
+    }
+    if (!list.length) list = ((save.rosters || {})[unit] || []).slice(0, 8);
+    return list;
+  }
+  function watchIntro(app) {
+    const missions = (window.__zulu && window.__zulu.MISSIONS) || [];
+    const m = missions.find((x) => x.map === 'killhouse') || missions.find((x) => x.map === 'embassy') || missions[0];
+    const squad = squadOf(app);
+    if (!m || !squad.length || !app.startMission) {
+      if (app.toast) app.toast('Pick a squad first, then watch the intro.');
+      return;
+    }
+    app.__forceLore = true;
+    app.__watchOnly = true;
+    if (app.menus && app.menus.root) app.menus.root.classList.remove('see');
+    app.startMission(m, squad, { 0: 1, 1: 1, 2: 1 });
+  }
+  function replay(kind) {
+    const app = window.__app;
+    const cut = window.__zuluCut;
+    const flow = app && app.__stageFlow;
+    if (!cut || !flow) return;
+    const menu = document.querySelector('.pausemenu');
+    if (menu) menu.classList.add('hidden');
+    const cards = kind === 'lore' ? cut.lore : kind === 'mission' ? cut.mission(flow.mission) : cut.stage(flow.mission, flow.n);
+    cut.play(cards);
+  }
+
+  function boot() {
+    const app = window.__app;
+    if (!app || !app.menus || app.__batch7) return;
+    app.__batch7 = true;
+    if (!document.getElementById('batch7css')) {
+      const st = document.createElement('style');
+      st.id = 'batch7css';
+      st.textContent = '.zreplay{display:block;width:100%;text-align:left;margin-top:4px}';
+      document.head.append(st);
+    }
+    const menus = app.menus;
+    const placeWatch = () => {
+      const col = (menus.root && menus.root.querySelector('.mm-col')) || document.querySelector('.mm-col');
+      if (!col || col.querySelector('.zwatch')) return !!col;
+      const b = menus.btn('Watch intro', 'big zwatch', () => watchIntro(app));
+      const tut = col.querySelector('.tutb');
+      if (tut) tut.after(b); else col.append(b);
+      return true;
+    };
+    const main = menus.main.bind(menus);
+    menus.main = function () {
+      const r = main.apply(menus, arguments);
+      placeWatch();
+      return r;
+    };
+    placeWatch();
+    setInterval(placeWatch, 400);
+    const settings = menus.settings.bind(menus);
+    menus.settings = function () {
+      const r = settings.apply(menus, arguments);
+      const body = document.querySelector('#menu .scr-body') || document.querySelector('#menu .screen');
+      if (body && !body.querySelector('.zwatch-set')) {
+        const b = document.createElement('button');
+        b.className = 'pm-row zwatch-set';
+        b.textContent = 'Watch opening intro';
+        b.onclick = () => watchIntro(app);
+        body.insertBefore(b, body.firstChild);
+      }
+      return r;
+    };
+    if (!window.__zuluReplayObs) {
+      window.__zuluReplayObs = new MutationObserver(() => {
+        const menu = document.querySelector('.pausemenu');
+        if (!menu || menu.classList.contains('hidden') || menu.querySelector('.zreplay')) return;
+        const add = (text, kind) => {
+          const b = document.createElement('button');
+          b.className = 'pm-row zreplay';
+          b.textContent = text;
+          b.onclick = () => replay(kind);
+          menu.append(b);
+        };
+        add('Watch opening intro', 'lore');
+        add('Replay mission intro', 'mission');
+        add('Replay stage intro', 'stage');
+      });
+      window.__zuluReplayObs.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
+  window.__zuluReshape = reshape;
+  window.__zuluStageLine = stageLine;
+  window.__zuluStageAudio = stageAudio;
+  window.__zuluAct = Act;
+  window.__zuluLore = STAGE_LORE;
+  if (!window.__zuluCutObs) {
+    window.__zuluCutObs = new MutationObserver(() => watchCuts());
+    window.__zuluCutObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-act', 'class'] });
   }
   const wait = setInterval(() => { if (window.__app && window.__app.menus) { clearInterval(wait); boot(); } }, 40);
 })();
