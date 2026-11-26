@@ -1490,8 +1490,8 @@
     };
     const see = (x, z) => (L.los ? L.los(x, z, lx, lz, false) : !blocked(x, z));
     let best = null, score = -1e9;
-    const dists = method === 'lockpick' || method === 'open' ? [3.4, 4.6] : method === 'charge' ? [5.5, 7.5, 9] : [3.6, 5, 6.8];
-    const highs = method === 'charge' ? [3.2, 5.4, 7] : [2.4, 3.6, 5.2];
+    const dists = method === 'kill' ? [4.2, 6, 8] : method === 'lockpick' || method === 'open' ? [3.4, 4.6] : method === 'charge' ? [5.5, 7.5, 9] : [3.6, 5, 6.8];
+    const highs = method === 'kill' ? [4.8, 6.5, 8.2] : method === 'charge' ? [3.2, 5.4, 7] : [2.4, 3.6, 5.2];
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * Math.PI * 2;
       for (const dist of dists) for (const hy of highs) {
@@ -1505,18 +1505,18 @@
         else s -= 50;
         if (wall) s -= 80;
         s -= Math.abs(dist - 5.2) * 3;
-        s -= Math.abs(hy - 3.4);
+        s -= Math.abs(hy - (method === 'kill' ? 6.5 : 3.4));
         if (s > score) { score = s; best = { x, y: hy, z, clear }; }
       }
     }
     if (!best) return;
     cine.to.p.x = best.x; cine.to.p.y = best.y; cine.to.p.z = best.z;
     if (cine.to.l) { cine.to.l.x = lx; cine.to.l.y = 1.15; cine.to.l.z = lz; }
-    cine.t = Math.max(cine.t || 0, 0.46);
+    cine.t = Math.max(cine.t || 0, 0.5);
+    fadeBlockers(g, !best.clear);
     if (method === 'charge') cine.dur = 2.5;
     else if (method === 'shotgun') cine.dur = 1.35;
     else if (method === 'lockpick' || method === 'open') cine.dur = 2.1;
-    fadeBlockers(g, !best.clear);
     if (method === 'kick' || method === 'shotgun' || method === 'charge') shakeCam(g, method === 'charge' ? 0.28 : 0.14);
     if (method === 'flash') flashCam();
   }

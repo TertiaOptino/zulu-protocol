@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-e7a21c90d4";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-f1c80a24e6";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:var(--tx);user-select:none;-webkit-user-select:none;touch-action:none;overscroll-behavior:none}
 #cv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;touch-action:none}
@@ -8298,8 +8298,8 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     };
     const see = (x, z) => (L.los ? L.los(x, z, lx, lz, false) : !blocked(x, z));
     let best = null, score = -1e9;
-    const dists = method === 'lockpick' || method === 'open' ? [3.4, 4.6] : method === 'charge' ? [5.5, 7.5, 9] : [3.6, 5, 6.8];
-    const highs = method === 'charge' ? [3.2, 5.4, 7] : [2.4, 3.6, 5.2];
+    const dists = method === 'kill' ? [4.2, 6, 8] : method === 'lockpick' || method === 'open' ? [3.4, 4.6] : method === 'charge' ? [5.5, 7.5, 9] : [3.6, 5, 6.8];
+    const highs = method === 'kill' ? [4.8, 6.5, 8.2] : method === 'charge' ? [3.2, 5.4, 7] : [2.4, 3.6, 5.2];
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * Math.PI * 2;
       for (const dist of dists) for (const hy of highs) {
@@ -8313,18 +8313,18 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
         else s -= 50;
         if (wall) s -= 80;
         s -= Math.abs(dist - 5.2) * 3;
-        s -= Math.abs(hy - 3.4);
+        s -= Math.abs(hy - (method === 'kill' ? 6.5 : 3.4));
         if (s > score) { score = s; best = { x, y: hy, z, clear }; }
       }
     }
     if (!best) return;
     cine.to.p.x = best.x; cine.to.p.y = best.y; cine.to.p.z = best.z;
     if (cine.to.l) { cine.to.l.x = lx; cine.to.l.y = 1.15; cine.to.l.z = lz; }
-    cine.t = Math.max(cine.t || 0, 0.46);
+    cine.t = Math.max(cine.t || 0, 0.5);
+    fadeBlockers(g, !best.clear);
     if (method === 'charge') cine.dur = 2.5;
     else if (method === 'shotgun') cine.dur = 1.35;
     else if (method === 'lockpick' || method === 'open') cine.dur = 2.1;
-    fadeBlockers(g, !best.clear);
     if (method === 'kick' || method === 'shotgun' || method === 'charge') shakeCam(g, method === 'charge' ? 0.28 : 0.14);
     if (method === 'flash') flashCam();
   }
