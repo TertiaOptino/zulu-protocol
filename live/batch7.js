@@ -721,17 +721,39 @@
     }
     return m;
   }
+  function tyreGeo(kit) {
+    if (kit.__tyre) return kit.__tyre;
+    const src = kit.box.mesh.geometry;
+    const Geo = src.constructor;
+    const Attr = src.attributes.position.constructor;
+    const geo = new Geo();
+    const segs = 18, radius = 0.34, half = 0.11;
+    const pos = [], nrm = [], uv = [], idx = [];
+    for (let s = 0; s < 2; s++) for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      pos.push(Math.cos(a) * radius, Math.sin(a) * radius, s ? half : -half);
+      nrm.push(Math.cos(a), Math.sin(a), 0);
+      uv.push(i / segs, s);
+    }
+    const stride = segs + 1;
+    for (let i = 0; i < segs; i++) idx.push(i, stride + i, i + 1, i + 1, stride + i, stride + i + 1);
+    geo.setAttribute('position', new Attr(new Float32Array(pos), 3));
+    geo.setAttribute('normal', new Attr(new Float32Array(nrm), 3));
+    geo.setAttribute('uv', new Attr(new Float32Array(uv), 2));
+    geo.setIndex(idx);
+    kit.__tyre = geo;
+    return geo;
+  }
   function roundWheel(kit, bits) {
     const g = empty(bits);
-    const n = 10;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      const tread = brighten(solid(kit, 0.2, 0.16, 0.26, 0x222222), 0x2a2a2a, 0.2);
-      tread.position.set(Math.cos(a) * 0.24, Math.sin(a) * 0.24, 0);
-      tread.rotation.z = a;
-      g.add(tread);
-    }
-    g.add(brighten(solid(kit, 0.22, 0.22, 0.28, 0xd8dde4), 0xe8eef4, 0.55));
+    const mat = kit.box.mesh.material.clone();
+    mat.map = null;
+    mat.vertexColors = false;
+    if (mat.color) mat.color.setHex(0x161616);
+    if (mat.emissive) { mat.emissive.setHex(0x222222); mat.emissiveIntensity = 0.2; }
+    const tyre = new kit.Mesh(tyreGeo(kit), mat);
+    g.add(tyre);
+    g.add(brighten(solid(kit, 0.16, 0.16, 0.2, 0xd5dbe2), 0xeef2f6, 0.5));
     return g;
   }
   function showCar(kit, bits, color, x, z, yaw) {
@@ -777,6 +799,13 @@
     for (const wz of [0.55, -0.55]) {
       const tail = brighten(solid(kit, 0.1, 0.12, 0.32, 0xff2a2a), 0xff3030, 1.6);
       put(tail, -2.05, 0.58, wz);
+    }
+    put(brighten(solid(kit, 0.12, 0.16, 1.55, 0x2a2e32), 0x3a3e44, 0.3), 2.02, 0.36, 0);
+    put(brighten(solid(kit, 0.12, 0.16, 1.55, 0x2a2e32), 0x3a3e44, 0.3), -2.02, 0.36, 0);
+    for (const side of [0.82, -0.82]) {
+      put(brighten(solid(kit, 1.5, 0.03, 0.03, 0x111111), 0x222222, 0.2), 0.15, 0.72, side);
+      const mirror = brighten(solid(kit, 0.16, 0.08, 0.1, 0xd0d4d8), 0xe8eef2, 0.45);
+      put(mirror, 0.55, 1.05, side > 0 ? 0.9 : -0.9);
     }
     root.position.set(x, 0, z);
     root.rotation.y = yaw || 0;
@@ -978,6 +1007,21 @@
       });
       this.at = this.saved.map(() => 0);
       window.__cutClip = 0;
+      if (['gear', 'drive', 'title', 'city'].includes(this.phase)) {
+        try {
+          const scene = g.env.scene;
+          if (!scene.getObjectByName('zvan')) {
+            const kit = g.__kit || kitOf(scene);
+            const bits = bitsOf(scene);
+            if (kit && kit.box && bits) {
+              const van = showCar(kit, bits, 0x1c2430, this.saved[0] ? this.saved[0].o.x + 3 : 8, this.saved[0] ? this.saved[0].o.z : 8, 0.4);
+              van.name = 'zvan';
+              van.scale.set(1.15, 1.15, 1.15);
+              scene.add(van);
+            }
+          }
+        } catch (err) { /* the intro still plays without the van */ }
+      }
     },
     tick(dt) {
       if (!this.on || !this.g) return;
@@ -1007,9 +1051,27 @@
           { look: 'stairs', dist: 9, pitch: 0.28, yaw: 1.05, push: 1, y: 1.4 }
         ],
         breach: [
-          { look: 'door', dist: 9, pitch: 0.34, yaw: 0.7, push: 0, y: 1.2 },
-          { look: 'door', dist: 5.6, pitch: 0.16, yaw: 1.5, push: 0.8, y: 1.25 },
-          { look: 'lead', dist: 6.2, pitch: 0.18, yaw: 0.4, push: 1, y: 1.35 }
+          { look: 'door', dist: 8, pitch: 0.55, yaw: 0.4, push: 0, y: 1.3 },
+          { look: 'door', dist: 5.5, pitch: 0.42, yaw: 1.7, push: 0.7, y: 1.2 },
+          { look: 'lead', dist: 6, pitch: 0.35, yaw: 2.4, push: 0.4, y: 1.3 }
+        ],
+        cold: [
+          { look: 'wide', dist: 28, pitch: 0.9, yaw: 0.2, push: 0, y: 0.4 },
+          { look: 'wide', dist: 24, pitch: 0.72, yaw: 0.55, push: 0.3, y: 1 }
+        ],
+        title: [
+          { look: 'squad', dist: 14, pitch: 0.4, yaw: 0.8, push: 1, y: 1.3 }
+        ],
+        city: [
+          { look: 'wide', dist: 26, pitch: 0.95, yaw: 0.1, push: 0.5, y: 0.2 },
+          { look: 'wide', dist: 18, pitch: 0.7, yaw: 1.1, push: 0.4, y: 1 }
+        ],
+        gear: [
+          { look: 'lead', dist: 5.5, pitch: 0.28, yaw: 1.3, push: 0.6, y: 1.35 }
+        ],
+        drive: [
+          { look: 'squad', dist: 12, pitch: 0.38, yaw: 0.4, push: 0.8, y: 1.2 },
+          { look: 'wide', dist: 16, pitch: 0.5, yaw: 1.6, push: 0.3, y: 1.1 }
         ]
       })[this.phase] || [
         { look: 'squad', dist: 12, pitch: 0.4, yaw: 0.5, push: 0.6, y: 1 }
@@ -1063,9 +1125,26 @@
         else if (shot.look === 'door' && this.doorAt) { x = this.doorAt.x; z = this.doorAt.z; }
         else if (shot.look === 'stairs' && this.stairBase) { x = this.stairBase.x; z = this.stairBase.z; }
         cam.target.set(x, shot.y, z);
-        cam.dist = shot.dist - ease * shot.push * 1.6;
+        const dist = shot.dist - ease * shot.push * 1.6;
+        let yaw = shot.yaw + ease * 0.18 + (this.phase === 'breach' && idx === 1 ? Math.sin(this.t * 18) * 0.04 : 0);
+        const wallAt = (px, pz) => {
+          const ix = Math.floor(px), iz = Math.floor(pz);
+          if (ix < 0 || iz < 0 || ix >= L.W || iz >= L.H) return false;
+          const t = L.type[iz * L.W + ix];
+          return t === 1 || t === 2 || t === 4;
+        };
+        if (shot.look === 'door' || this.phase === 'breach') {
+          const cy = Math.cos(shot.pitch);
+          for (let k = 0; k < 12; k++) {
+            const tryYaw = yaw + k * 0.5;
+            const px = x + Math.sin(tryYaw) * cy * dist;
+            const pz = z + Math.cos(tryYaw) * cy * dist;
+            if (!wallAt(px, pz)) { yaw = tryYaw; break; }
+          }
+        }
+        cam.dist = dist;
         cam.pitch = shot.pitch;
-        cam.yaw = shot.yaw + ease * 0.18;
+        cam.yaw = yaw;
       }
     },
     stop() {
@@ -1204,26 +1283,36 @@
     const put = (m, px, py, pz) => { m.position.x += px; m.position.y += py; m.position.z += pz; root.add(m); };
     const wood = tint.wood, cloth = tint.cloth, leaf = tint.leaf;
     if (kind === 'sofa') {
-      put(brighten(solid(kit, 2.1, 0.42, 0.85, cloth), cloth, 0.32), 0, 0.32, 0);
-      put(brighten(solid(kit, 2.1, 0.7, 0.16, cloth), cloth, 0.28), 0, 0.7, -0.34);
-      put(brighten(solid(kit, 0.16, 0.62, 0.85, cloth), cloth, 0.28), -1.0, 0.4, 0);
-      put(brighten(solid(kit, 0.16, 0.62, 0.85, cloth), cloth, 0.28), 1.0, 0.4, 0);
-      put(brighten(solid(kit, 0.08, 0.22, 0.08, wood), wood, 0.25), -0.9, 0, 0.32);
-      put(brighten(solid(kit, 0.08, 0.22, 0.08, wood), wood, 0.25), 0.9, 0, 0.32);
+      put(brighten(solid(kit, 2.15, 0.28, 0.82, cloth), cloth, 0.3), 0, 0.28, 0);
+      put(brighten(solid(kit, 0.7, 0.16, 0.7, cloth), cloth, 0.4), -0.5, 0.46, 0.04);
+      put(brighten(solid(kit, 0.7, 0.16, 0.7, cloth), cloth, 0.4), 0.5, 0.46, 0.04);
+      put(brighten(solid(kit, 2.15, 0.62, 0.14, cloth), cloth, 0.28), 0, 0.7, -0.34);
+      put(brighten(solid(kit, 0.16, 0.55, 0.82, cloth), cloth, 0.28), -1.02, 0.42, 0);
+      put(brighten(solid(kit, 0.16, 0.55, 0.82, cloth), cloth, 0.28), 1.02, 0.42, 0);
+      for (const [lx, lz] of [[-0.9, 0.32], [0.9, 0.32], [-0.9, -0.32], [0.9, -0.32]]) put(brighten(solid(kit, 0.07, 0.2, 0.07, wood), wood, 0.22), lx, 0, lz);
     } else if (kind === 'chair') {
-      put(brighten(solid(kit, 0.48, 0.08, 0.48, cloth), cloth, 0.3), 0, 0.46, 0);
-      put(brighten(solid(kit, 0.48, 0.55, 0.08, cloth), cloth, 0.3), 0, 0.7, -0.2);
-      for (const [lx, lz] of [[-0.18, -0.18], [0.18, -0.18], [-0.18, 0.18], [0.18, 0.18]]) put(brighten(solid(kit, 0.06, 0.46, 0.06, wood), wood, 0.25), lx, 0, lz);
+      put(brighten(solid(kit, 0.46, 0.07, 0.46, cloth), cloth, 0.35), 0, 0.48, 0);
+      put(brighten(solid(kit, 0.46, 0.5, 0.07, cloth), cloth, 0.32), 0, 0.74, -0.2);
+      put(brighten(solid(kit, 0.08, 0.28, 0.08, 0x2a2e32), 0x3a3e44, 0.25), 0, 0.22, 0);
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        put(brighten(solid(kit, 0.22, 0.04, 0.05, 0x2a2e32), 0x3a3e44, 0.25), Math.cos(a) * 0.16, 0.05, Math.sin(a) * 0.16);
+      }
     } else if (kind === 'shelf') {
-      for (let i = 0; i < 4; i++) put(brighten(solid(kit, 1.15, 0.06, 0.38, wood), wood, 0.3), 0, 0.28 + i * 0.38, 0);
-      put(brighten(solid(kit, 0.06, 1.5, 0.38, wood), wood, 0.25), -0.55, 0, 0);
-      put(brighten(solid(kit, 0.06, 1.5, 0.38, wood), wood, 0.25), 0.55, 0, 0);
-      put(brighten(solid(kit, 0.35, 0.22, 0.22, 0xc4562a), 0xc4562a, 0.35), -0.2, 0.5, 0);
-      put(brighten(solid(kit, 0.28, 0.28, 0.2, 0x2f6b4f), 0x2f6b4f, 0.3), 0.22, 0.95, 0);
+      for (let i = 0; i < 4; i++) put(brighten(solid(kit, 1.15, 0.05, 0.36, wood), wood, 0.32), 0, 0.28 + i * 0.38, 0);
+      put(brighten(solid(kit, 0.06, 1.55, 0.36, wood), wood, 0.25), -0.55, 0, 0);
+      put(brighten(solid(kit, 0.06, 1.55, 0.36, wood), wood, 0.25), 0.55, 0, 0);
+      const books = [0xc4562a, 0x2f4a6b, 0x6b3a2f, 0x2f6b4f, 0xd8d2c4];
+      for (let i = 0; i < books.length; i++) put(brighten(solid(kit, 0.08, 0.24, 0.18, books[i]), books[i], 0.35), -0.4 + i * 0.18, 0.48, 0);
+    } else if (kind === 'lamp') {
+      put(brighten(solid(kit, 0.28, 0.06, 0.28, 0x2a2e32), 0x3a3e44, 0.3), 0, 0.04, 0);
+      put(brighten(solid(kit, 0.06, 1.15, 0.06, 0x2a2e32), 0x3a3e44, 0.25), 0, 0.1, 0);
+      put(brighten(solid(kit, 0.36, 0.22, 0.36, 0xf4e2a8), 0xfff1c4, 0.7), 0, 1.2, 0);
     } else if (kind === 'plant') {
-      put(brighten(solid(kit, 0.38, 0.32, 0.38, 0xc4a574), 0xc4a574, 0.3), 0, 0.16, 0);
-      put(brighten(solid(kit, 0.7, 0.9, 0.7, leaf), leaf, 0.35), 0, 0.7, 0);
-      put(brighten(solid(kit, 0.4, 0.45, 0.4, leaf), leaf, 0.4), 0.15, 1.15, 0);
+      put(brighten(solid(kit, 0.36, 0.28, 0.36, 0xc4a574), 0xc4a574, 0.3), 0, 0.14, 0);
+      put(brighten(solid(kit, 0.22, 0.16, 0.22, 0x6b3a22), 0x6b3a22, 0.25), 0, 0.32, 0);
+      put(brighten(solid(kit, 0.62, 0.7, 0.62, leaf), leaf, 0.35), 0, 0.75, 0);
+      put(brighten(solid(kit, 0.36, 0.4, 0.36, leaf), leaf, 0.45), 0.12, 1.2, 0.05);
     } else if (kind === 'bed') {
       put(brighten(solid(kit, 1.2, 0.28, 2.0, wood), wood, 0.25), 0, 0.2, 0);
       put(brighten(solid(kit, 1.15, 0.18, 1.9, cloth), cloth, 0.3), 0, 0.4, 0);
@@ -1311,7 +1400,7 @@
       drop(kind, x + 0.5, z + 0.5, 0.4);
       const p = cells[1] || cells[0];
       const px = p % L.W, pz = (p / L.W) | 0;
-      if (open(px, pz)) drop('plant', px + 0.5, pz + 0.5, 0);
+      if (open(px, pz)) { drop('plant', px + 0.5, pz + 0.5, 0); if (open(px + 1, pz)) drop('lamp', px + 1.5, pz + 0.5, 0); }
       n++;
     }
     g.zuluFurn = { n, theme, spots: spots.length };
@@ -1386,34 +1475,104 @@
       if (this.moveUnit) this.moveUnit(e, t);
     };
   }
-  function clearShot(g, lookX, lookZ) {
+  function frameCine(g, lookX, lookZ, bias, method) {
     const cam = g.env && g.env.cam;
     const cine = cam && cam.cine;
-    const p = cine && cine.to && cine.to.p;
     const L = g.level;
-    if (!p || !L || !L.type) return;
+    if (!cine || !cine.to || !cine.to.p || !L || !L.type) return;
+    const lx = bias ? (lookX + bias.x) / 2 : lookX;
+    const lz = bias ? (lookZ + bias.z) / 2 : lookZ;
     const blocked = (x, z) => {
       const ix = Math.floor(x), iz = Math.floor(z);
-      if (ix < 0 || iz < 0 || ix >= L.W || iz >= L.H) return true;
+      if (ix < 0 || iz < 0 || ix >= L.W || iz >= L.H) return false;
       const t = L.type[iz * L.W + ix];
       return t === 1 || t === 2 || t === 4;
     };
-    if (!blocked(p.x, p.z)) return;
-    const ix = Math.floor(lookX), iz = Math.floor(lookZ);
-    for (let r = 2; r <= 7; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
-      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
-      const x = ix + dx + 0.5, z = iz + dz + 0.5;
-      if (blocked(x, z)) continue;
-      p.x = x; p.y = Math.max(p.y || 0, 2.2); p.z = z;
-      if (cine.to.l) { cine.to.l.x = lookX; cine.to.l.y = 0.9; cine.to.l.z = lookZ; }
+    const see = (x, z) => (L.los ? L.los(x, z, lx, lz, false) : !blocked(x, z));
+    let best = null, score = -1e9;
+    const dists = method === 'lockpick' || method === 'open' ? [3.4, 4.6] : method === 'charge' ? [5.5, 7.5, 9] : [3.6, 5, 6.8];
+    const highs = method === 'charge' ? [3.2, 5.4, 7] : [2.4, 3.6, 5.2];
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2;
+      for (const dist of dists) for (const hy of highs) {
+        const x = lx + Math.sin(a) * dist, z = lz + Math.cos(a) * dist;
+        const wall = blocked(x, z);
+        const clear = see(x, z);
+        let s = 0;
+        if (clear && !wall) s += 120;
+        else if (!wall && hy >= 4.8) s += 70;
+        else if (hy >= 5) s += 25;
+        else s -= 50;
+        if (wall) s -= 80;
+        s -= Math.abs(dist - 5.2) * 3;
+        s -= Math.abs(hy - 3.4);
+        if (s > score) { score = s; best = { x, y: hy, z, clear }; }
+      }
+    }
+    if (!best) return;
+    cine.to.p.x = best.x; cine.to.p.y = best.y; cine.to.p.z = best.z;
+    if (cine.to.l) { cine.to.l.x = lx; cine.to.l.y = 1.15; cine.to.l.z = lz; }
+    cine.t = Math.max(cine.t || 0, 0.46);
+    if (method === 'charge') cine.dur = 2.5;
+    else if (method === 'shotgun') cine.dur = 1.35;
+    else if (method === 'lockpick' || method === 'open') cine.dur = 2.1;
+    fadeBlockers(g, !best.clear);
+    if (method === 'kick' || method === 'shotgun' || method === 'charge') shakeCam(g, method === 'charge' ? 0.28 : 0.14);
+    if (method === 'flash') flashCam();
+  }
+  function fadeBlockers(g, on) {
+    const scene = g.env && g.env.scene;
+    if (!scene) return;
+    if (!on) {
+      for (const rec of g.__cineFade || []) rec.mesh.material = rec.mat;
+      g.__cineFade = [];
       return;
     }
+    if (g.__cineFade && g.__cineFade.length) return;
+    g.__cineFade = [];
+    scene.traverse((o) => {
+      if (!o.isMesh || o.isSkinnedMesh || !o.geometry || !o.material || !o.material.clone) return;
+      if (!o.geometry.boundingBox && o.geometry.computeBoundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox;
+      if (!bb) return;
+      const h = (bb.max.y - bb.min.y) * (o.scale ? o.scale.y : 1);
+      const w = Math.max((bb.max.x - bb.min.x) * (o.scale ? o.scale.x : 1), (bb.max.z - bb.min.z) * (o.scale ? o.scale.z : 1));
+      if (h < 1.8 || w < 4) return;
+      const copy = o.material.clone();
+      copy.transparent = true;
+      copy.opacity = 0.16;
+      copy.depthWrite = false;
+      g.__cineFade.push({ mesh: o, mat: o.material });
+      o.material = copy;
+    });
+  }
+  function shakeCam(g, amp) {
+    const cine = g.env && g.env.cam && g.env.cam.cine;
+    if (!cine || !cine.to || !cine.to.p || g.__shaking) return;
+    g.__shaking = true;
+    const p = cine.to.p, x = p.x, y = p.y, z = p.z;
+    let n = 0;
+    const step = () => {
+      n++;
+      if (!g.env.cam.cine || n > 10) { p.x = x; p.y = y; p.z = z; g.__shaking = false; return; }
+      p.x = x + Math.sin(n * 2.2) * amp;
+      p.y = y + Math.cos(n * 1.7) * amp * 0.4;
+      p.z = z + Math.cos(n * 2.2) * amp;
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  function flashCam() {
+    let el = document.querySelector('.zulu-flash');
+    if (!el) { el = document.createElement('div'); el.className = 'zulu-flash'; el.style.cssText = 'position:fixed;inset:0;background:#fff;opacity:0;z-index:79;pointer-events:none;transition:opacity .35s'; document.body.appendChild(el); }
+    el.style.opacity = '0.85';
+    setTimeout(() => { el.style.opacity = '0'; }, 80);
   }
   function armCineOverlay() {
     if (!document.getElementById('zulu-cine-style')) {
       const st = document.createElement('style');
       st.id = 'zulu-cine-style';
-      st.textContent = 'body.zulu-cine #hud{z-index:40}body.zulu-cine .cine{z-index:2}body.zulu-cine .cine .bar{height:13vh}body.zulu-cine .cine-txt{left:max(12px,env(safe-area-inset-left))!important;right:max(12px,env(safe-area-inset-right));bottom:max(16vh,84px)!important;font:900 clamp(28px,8vw,48px)/1.05 system-ui,sans-serif!important;letter-spacing:.06em!important;z-index:3}#hud .cine.show{opacity:1!important}';
+      st.textContent = 'body.zulu-cine #hud{z-index:40}body.zulu-cine .cine{z-index:2}body.zulu-cine .cine .bar{height:13vh}body.zulu-cine .cine-txt{left:max(12px,env(safe-area-inset-left))!important;right:max(12px,env(safe-area-inset-right));bottom:max(16vh,84px)!important;font:900 clamp(28px,8vw,48px)/1.05 system-ui,sans-serif!important;letter-spacing:.06em!important;z-index:3}#hud .cine.show{opacity:1!important}body.zulu-intro::before,body.zulu-intro::after{content:"";position:fixed;left:0;right:0;height:12vh;background:#000;z-index:70;pointer-events:none}body.zulu-intro::before{top:0}body.zulu-intro::after{bottom:0}.ztitle{position:fixed;left:8px;right:8px;top:36%;text-align:center;z-index:72;font:900 clamp(26px,8vw,60px)/1.05 system-ui,sans-serif;letter-spacing:.12em;color:#f4f1ea;text-shadow:0 10px 28px #000;pointer-events:none}.dm-list{display:flex;flex-direction:column;gap:4px}.dm-opt{text-align:left;min-height:44px}';
       document.head.appendChild(st);
     }
     const hud = window.__app && window.__app.hud;
@@ -1423,6 +1582,7 @@
     hud.setCine = function (on, label) {
       orig(on, label);
       document.body.classList.toggle('zulu-cine', !!on);
+      if (!on && window.__game) fadeBlockers(window.__game, false);
     };
   }
   function armBreachCam() {
@@ -1442,7 +1602,12 @@
       const cin = P.cinematic;
       P.cinematic = function (b) {
         const ret = cin.call(this, b);
-        try { if (b && b.door) clearShot(this, b.door.x + 0.5, b.door.y + 0.5); } catch (err) { /* keep the shot */ }
+        try {
+          if (b && b.door) {
+            const br = b.breacher || (b.units && b.units[0]);
+            frameCine(this, b.door.x + 0.5, b.door.y + 0.5, br && { x: br.x, z: br.z }, b.flash ? 'flash' : b.method);
+          }
+        } catch (err) { /* keep the shot */ }
         this.__cineAt = (typeof performance !== 'undefined' && performance.now()) || Date.now();
         return ret;
       };
@@ -1453,7 +1618,7 @@
       P.finalKill = function (victim, killer) {
         const k = killer || (this.ops || []).find((o) => o && o.alive) || victim;
         const ret = fk.call(this, victim, k);
-        try { if (victim) clearShot(this, victim.x, victim.z); } catch (err) { /* keep the shot */ }
+        try { if (victim) frameCine(this, victim.x, victim.z, k && { x: k.x, z: k.z }, 'kill'); } catch (err) { /* keep the shot */ }
         this.__cineAt = (typeof performance !== 'undefined' && performance.now()) || Date.now();
         return ret;
       };
