@@ -562,7 +562,7 @@
         if (raf) cancelAnimationFrame(raf);
         stopAudio();
         root.remove();
-        document.body.classList.remove('zulu-cut');
+        document.body.classList.remove('zulu-cut', 'zulu-intro');
         (g.__cutSprites || []).forEach((o) => { o.visible = true; });
         document.removeEventListener('keydown', onKey);
         cam.target.set(saved.x, saved.y, saved.z);
@@ -577,6 +577,13 @@
         h.textContent = c.title;
         p.textContent = c.body;
         root.dataset.act = c.act || '';
+        document.body.classList.toggle('zulu-intro', !!c.intro);
+        let title = root.querySelector('.ztitle');
+        if (c.intro && (c.act === 'title' || c.act === 'cold')) {
+          if (!title) { title = document.createElement('div'); title.className = 'ztitle'; root.append(title); }
+          title.textContent = c.act === 'cold' ? '' : 'ZULU PROTOCOL';
+          title.hidden = c.act === 'cold';
+        } else if (title) title.hidden = true;
         step.textContent = (i + 1) + ' / ' + cards.length;
         nextB.textContent = i === cards.length - 1 ? 'Begin' : 'Continue';
         aim(i);
@@ -605,11 +612,11 @@
       raf = requestAnimationFrame(glide);
     }
     const LORE_BEATS = [
-      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3', act: 'deploy' },
-      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3', act: 'deploy' },
-      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3', act: 'stack' },
-      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3', act: 'stairs' },
-      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3', act: 'breach' }
+      { title: 'Zulu Protocol', body: "Zulu is this squad's operational callsign. It is not a new name for the operators.", file: 'audio/cuts/lore-1.mp3', act: 'cold', intro: true },
+      { title: 'Zulu Protocol', body: 'The Zulu Protocol is the deployment order, not the name of a unit.', file: 'audio/cuts/lore-2.mp3', act: 'title', intro: true },
+      { title: 'Zulu Protocol', body: 'The operators you select keep their real identities. They did not serve together in history. This scenario is fiction.', file: 'audio/cuts/lore-3.mp3', act: 'city', intro: true },
+      { title: 'Zulu Protocol', body: 'Ten operators. Alpha four, Bravo three, Charlie three. The opposition is local terrorists, smugglers, and cartels.', file: 'audio/cuts/lore-4.mp3', act: 'gear', intro: true },
+      { title: 'Zulu Protocol', body: 'Training comes first, then Ankara. Intel, a rescue, a bomb, and an extraction. Cash is the equipment budget, not a price on soldiers.', file: 'audio/cuts/lore-5.mp3', act: 'drive', intro: true }
     ];
     function starText(n) { return [1, 2, 3].map((i) => (i <= n ? '★' : '☆')).join(''); }
     function remember(save, id, n, stars) {

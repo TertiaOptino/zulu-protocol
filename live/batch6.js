@@ -328,6 +328,124 @@
     + '<p><b>three.js 0.170.0</b> — MIT. meshoptimizer decoder — MIT, via three.js. Build tools (esbuild, glTF Transform, sharp, tiny-inflate, topojson-client, Playwright) are not in the download.</p>'
     + '<p><b>Older builds</b> in Settings are earlier copies of this game, including the 24 Oct 2026 Pages deploy. Opening one backs up the save and restores it on the way back.</p></div>';
 
+  function polishDoors(app) {
+    const hud = app.hud;
+    if (!hud || hud.__doorList || !hud.openDoorMenu) return;
+    hud.__doorList = true;
+    const orig = hud.openDoorMenu.bind(hud);
+    const names = { kick: 'Kick', shotgun: 'Shotgun (hinges)', charge: 'Explosive charge', lockpick: 'Lockpick / quiet open', open: 'Quiet open' };
+    hud.openDoorMenu = function () {
+      const ret = orig.apply(this, arguments);
+      const list = this.doorMenu && this.doorMenu.querySelector('.dm-list');
+      if (!list) return ret;
+      for (const b of list.querySelectorAll('.dm-opt')) {
+        const id = b.dataset.id;
+        const strong = b.querySelector('b');
+        if (!strong || !names[id]) continue;
+        const stock = strong.querySelector('i');
+        strong.innerHTML = names[id] + (stock ? ' ' + stock.outerHTML : '');
+      }
+      if (!list.querySelector('[data-id="flashentry"]')) {
+        const flash = document.createElement('button');
+        flash.className = 'dm-opt';
+        flash.dataset.id = 'flashentry';
+        const n = (this.g && this.g.pool && this.g.pool.flash) || 0;
+        flash.innerHTML = '<b>Flashbang + entry</b><small>Throw a flash, then kick. Needs a flashbang. ×' + n + '</small>';
+        if (!(n > 0)) flash.classList.add('dis');
+        flash.onclick = () => {
+          if (flash.classList.contains('dis')) return;
+          const kick = list.querySelector('[data-id="kick"]');
+          if (kick) kick.click();
+          const tog = this.doorMenu.querySelector('.dm-flash');
+          if (tog && !tog.classList.contains('on')) tog.click();
+        };
+        list.append(flash);
+      }
+      return ret;
+    };
+  }
+  const GUNS = [
+    { id: 'm4a1', name: 'M4A1', type: 'rifle', dmg: 34, rof: 8, acc: 0.72, range: 16, mob: 1 },
+    { id: 'hk416', name: 'HK416', type: 'rifle', dmg: 36, rof: 7.5, acc: 0.76, range: 17, mob: 0.98 },
+    { id: 'mp5', name: 'MP5A3', type: 'smg', dmg: 24, rof: 11, acc: 0.74, range: 10, mob: 1.06 },
+    { id: 'm870', name: 'M870', type: 'shotgun', dmg: 85, rof: 1.3, acc: 0.85, range: 7, mob: 1.02 },
+    { id: 'glock17', name: 'Glock 17', type: 'pistol', dmg: 24, rof: 5, acc: 0.68, range: 9, mob: 1 },
+    { id: 'm249', name: 'M249', type: 'lmg', dmg: 32, rof: 12, acc: 0.6, range: 18, mob: 0.88 }
+  ];
+  function polishArmory(app) {
+    const menus = app.menus;
+    if (!menus || menus.__armRich || !menus.armory) return;
+    menus.__armRich = true;
+    const orig = menus.armory.bind(menus);
+    menus.armory = function (tab) {
+      const ret = orig(tab || 'weapons');
+      const host = document.querySelector('#menu .scr-body') || document.querySelector('#menu');
+      if (!host || host.querySelector('.zarm')) return ret;
+      const panel = document.createElement('div');
+      panel.className = 'zarm';
+      const canvas = document.createElement('canvas');
+      canvas.width = 320; canvas.height = 150; canvas.className = 'zarm-view';
+      panel.append(canvas);
+      let ang = 0.2, gun = 0;
+      const draw = () => {
+        if (!canvas.isConnected) return;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#10141a'; ctx.fillRect(0, 0, 320, 150);
+        ctx.save(); ctx.translate(160, 88); ctx.scale(1, 0.72); ctx.rotate(ang);
+        ctx.fillStyle = '#d5d8dc'; ctx.fillRect(-78, -7, 96, 14);
+        ctx.fillStyle = '#9aa0a8'; ctx.fillRect(-18, -16, 34, 12);
+        ctx.fillStyle = '#6e747c'; ctx.fillRect(16, -5, 30, 7);
+        ctx.fillStyle = '#3a3e44'; ctx.fillRect(-48, 6, 7, 24);
+        ctx.restore();
+        ctx.fillStyle = '#e7efe4'; ctx.font = '700 14px system-ui';
+        ctx.fillText(GUNS[gun].name + ' · ' + GUNS[gun].type, 12, 22);
+        ang += 0.02;
+        requestAnimationFrame(draw);
+      };
+      draw();
+      const save = app.save || {};
+      const ids = Object.keys(save.rosters || {});
+      const unit = save.unit && save.rosters[save.unit] ? save.unit : ids[0];
+      const roster = (save.rosters && save.rosters[unit]) || [];
+      const ops = document.createElement('div');
+      ops.className = 'zarm-ops';
+      roster.filter((o) => o.team >= 0).slice(0, 8).forEach((op) => {
+        const b = document.createElement('button');
+        b.className = 'zarm-op';
+        const label = () => (op.name || 'Op') + ' · ' + (op.weapon || 'rifle');
+        b.textContent = label();
+        b.onclick = () => {
+          const i = Math.max(0, GUNS.findIndex((g) => g.id === op.weapon));
+          const next = GUNS[(i + 1) % GUNS.length];
+          op.weapon = next.id;
+          gun = (i + 1) % GUNS.length;
+          b.textContent = label();
+          if (app.persist) app.persist();
+        };
+        ops.append(b);
+      });
+      panel.append(ops);
+      host.querySelectorAll('small').forEach((small) => {
+        const row = small.parentElement;
+        if (!row || row.querySelector('.zbars')) return;
+        const text = small.textContent || '';
+        const num = (re) => { const m = text.match(re); return m ? +m[1] : 0; };
+        const bars = [['DMG', num(/DMG ([0-9.]+)/) / 150], ['RATE', num(/([0-9.]+)\/s/) / 15], ['ACC', num(/ACC ([0-9.]+)/) / 100], ['RNG', num(/RNG ([0-9.]+)/) / 32], ['MOVE', num(/speed ([0-9.]+)/) / 110]];
+        if (!bars[0][1]) return;
+        const box = document.createElement('div');
+        box.className = 'zbars';
+        for (const [name, v] of bars) {
+          const lab = document.createElement('span'); lab.textContent = name;
+          const bar = document.createElement('div'); bar.className = 'zbar';
+          const fill = document.createElement('i'); fill.style.width = Math.max(4, Math.min(100, v * 100)) + '%';
+          bar.append(fill); box.append(lab, bar);
+        }
+        small.after(box);
+      });
+      host.prepend(panel);
+      return ret;
+    };
+  }
   function boot() {
     const app = window.__app;
     if (!app || app.__batch6) return;
@@ -335,7 +453,7 @@
     if (!document.getElementById('batch6css')) {
       const st = document.createElement('style');
       st.id = 'batch6css';
-      st.textContent = '.w1sbx-bar{position:fixed;left:8px;top:max(8px,env(safe-area-inset-top));bottom:auto;transform:none;z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-start;max-width:min(520px,calc(100vw - 16px));background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.45}.zcred p{margin:8px 0}.w1shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.w1shop-card{background:#14181c;border:1px solid #ffffff22;border-radius:10px;padding:8px;color:#e8efe4}.w1thumb{width:100%;height:auto;background:#0e1216;border-radius:8px}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
+      st.textContent = '.w1sbx-bar{position:fixed;left:8px;top:max(8px,env(safe-area-inset-top));bottom:auto;transform:none;z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-start;max-width:min(520px,calc(100vw - 16px));background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.45}.zcred p{margin:8px 0}.w1shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.w1shop-card{background:#14181c;border:1px solid #ffffff22;border-radius:10px;padding:8px;color:#e8efe4}.w1thumb{width:100%;height:auto;background:#0e1216;border-radius:8px}.zarm{display:flex;flex-direction:column;gap:8px;margin:0 0 10px}.zarm-view{width:100%;max-width:420px;height:auto;background:#10141a;border-radius:10px}.zarm-ops{display:flex;flex-wrap:wrap;gap:6px}.zarm-op{font:600 12px system-ui;background:#1c232c;color:#e8efe4;border:1px solid #ffffff22;border-radius:8px;padding:6px 8px;min-height:36px}.zbars{display:grid;grid-template-columns:52px 1fr;gap:2px 6px;align-items:center;margin-top:4px;font:600 10px system-ui;color:#c5d0c0}.zbar{height:7px;background:#ffffff18;border-radius:4px;overflow:hidden}.zbar i{display:block;height:100%;background:#e37b22}@media (max-width:420px){.shoplist.cards{display:flex;flex-direction:column}.shoprow{flex-wrap:wrap}.zarm-view{max-width:none}}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
       document.head.append(st);
     }
     const menus = app.menus;
@@ -351,6 +469,8 @@
       }
       return r;
     };
+    polishDoors(app);
+    polishArmory(app);
     const credits = menus.credits.bind(menus);
     menus.credits = function () {
       const r = credits.apply(menus, arguments);
