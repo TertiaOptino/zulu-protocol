@@ -122,15 +122,24 @@
     P.updateBreach = function (b, dt) {
       const L = this.level;
       try {
-      if (b.phase === 'stack' && b.units.length) {
+      if ((b.phase === 'stack' || b.phase === 'ready') && b.units.length && !this.paused) {
         b.w1t = (b.w1t || 0) + dt;
+        const br = b.units.includes(b.breacher) ? b.breacher : b.units[0];
+        const fx = b.front[0] + 0.5, fz = b.front[1] + 0.5;
+        const near = br && Math.hypot(br.x - fx, br.z - fz) < 1.45;
+        b.w1near = near ? (b.w1near || 0) + dt : 0;
         const idle = b.units.every(u => !u.cur || u.cur.b !== b || u.pi >= u.path.length);
         b.w1idle = idle ? (b.w1idle || 0) + dt : 0;
-        if (!this.paused && (b.w1t > STACK_TIMEOUT || b.w1idle > IDLE_TIMEOUT)) {
-          const r = oU.call(this, b, dt);
-          if (b.phase === 'stack') { b.w1timeout = true; b.phase = b.wait ? 'ready' : 'act'; b.t = 0; }
-          return r;
+        // One soldier stuck off his mark used to hold the whole breach in "stack", so the camera never started.
+        if (b.phase === 'stack' && (b.w1near > 0.35 || b.w1idle > 1.6 || b.w1t > 6)) {
+          b.w1timeout = !(b.w1near > 0.35);
+          b.phase = b.wait ? 'ready' : 'act';
+          b.t = 0;
         }
+      }
+      if (b.phase === 'act' && b.door && b.door.state !== 'closed' && !b.w1cined && this.settings && this.settings.cine !== false) {
+        b.w1cined = true;
+        try { this.cinematic(b); } catch (err) { /* the original update still runs */ }
       }
       if (b.phase === 'act' && b.w1slots && !b.w1in && b.door.state === 'closed') {
         const br = b.units.includes(b.breacher) ? b.breacher : b.units[0];
@@ -138,7 +147,7 @@
           const fi = L.idx(b.front[0], b.front[1]);
           const fx = b.front[0] + 0.5, fz = b.front[1] + 0.5;
           b.w1st = (b.w1st || 0) + dt;
-          if (b.w1st < STEP_IN_MAX && Math.hypot(br.x - fx, br.z - fz) > 0.45) {
+          if (b.w1st < 1.1 && Math.hypot(br.x - fx, br.z - fz) > 1.45) {
             if (!b.w1go) { b.w1go = true; this.pathTo(br, fi); b.stackCells.set(br, fi); }
             return;
           }
@@ -146,7 +155,16 @@
         b.w1in = true;
       }
       } catch (e) { /* fall through to the original breach update */ }
-      return oU.call(this, b, dt);
+      const doorWas = b.door && b.door.state;
+      const r = oU.call(this, b, dt);
+      try {
+        if (!b.w1cined && b.door && doorWas === 'closed' && b.door.state !== 'closed' && this.settings && this.settings.cine !== false) {
+          b.w1cined = true;
+          const played = (this.cineLog || []).some((x) => x.door === b.door.i && x.kind !== 'skipped-busy');
+          if (!played) this.cinematic(b);
+        }
+      } catch (err) { /* overlay is optional */ }
+      return r;
     };
     const oF = P.frame;
     P.frame = function (rdt) {
