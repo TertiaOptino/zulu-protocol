@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-d2f09aa118";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>Zulu Protocol</title><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Zulu Protocol"><meta name="application-name" content="Zulu Protocol"><meta name="theme-color" content="#0d1014"><meta name="format-detection" content="telephone=no"><script>try{var __zb=localStorage.getItem('zulu_w8_save_backup');if(__zb){var __zo=JSON.parse(__zb);if(__zo&&__zo.save)localStorage.setItem('zulu_protocol_save_v1',__zo.save);else localStorage.removeItem('zulu_protocol_save_v1');localStorage.removeItem('zulu_w8_save_backup');window.__zuluSaveRestored=__zo;}}catch(e){}window.__ZULU_BUILD="zulu-f8c2a61d30";window.__ZULU_BUILT="2026-11-20T00:45:00.000Z"</script><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"><style>:root{--o:#ff7a1a;--o2:#ffa45c;--bg:#14171b;--pan:rgba(20,23,28,.82);--line:rgba(255,255,255,.1);--tx:#e6e2da;--dim:#8d9096;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:var(--tx);user-select:none;-webkit-user-select:none;touch-action:none;overscroll-behavior:none}
 #cv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;touch-action:none}
@@ -5763,6 +5763,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     }
     g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id, kept: !isLot };
     if (isLot && window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
+    if (!isLot && window.__zuluFurnish) { try { window.__zuluFurnish(g); } catch (err) { window.__furnErr = String(err && err.stack || err); } }
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
@@ -5947,7 +5948,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
       document.body.append(root);
       let i = 0, audio = null, raf = 0, t0 = 0;
       const ops = (g.ops || []).filter((o) => o.alive);
-      const stopAudio = () => { if (!audio) return; try { audio.pause(); } catch (e) {} audio.src = ''; audio = null; };
+      const stopAudio = () => { if (!audio) return; try { audio.pause(); } catch (e) {} audio.src = ''; if (window.__zuluCutAudio === audio) window.__zuluCutAudio = null; audio = null; };
       const aim = (k) => {
         const wide = k === 0;
         const op = ops.length ? ops[k % ops.length] : null;
@@ -5984,6 +5985,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
         t0 = performance.now();
         if (c.file) {
           audio = new Audio(c.file);
+          window.__zuluCutAudio = audio;
           const mix = window.__audio && window.__audio.getMix && window.__audio.getMix();
           audio.volume = Math.max(0, Math.min(1, ((mix && mix.voice) || 0.8) * ((mix && mix.master) || 0.8)));
           audio.onended = () => { if (root.isConnected) setTimeout(advance, 400); };
@@ -7095,6 +7097,8 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
   function reshape(g, stage) {
     const L = g.level;
     const scene = g.env && g.env.scene;
+    armBreachCam();
+    armHostage();
     if (!L || !L.type || !scene || L.__zuluShaped) return;
     const bits = bitsOf(scene);
     if (!bits) return;
@@ -7200,7 +7204,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     const open = (x, y) => x >= 0 && y >= 0 && x < W && y < H && L.type[y * W + x] === 0 && !occ.has(y * W + x);
     let cars = 0;
     let placed = 0;
-    const colors = [0xd8d8d8, 0x8a1e1e, 0x1c3a6e, 0x1a1c1e, 0xe0c020, 0x2f6b3a, 0xc4552a];
+    const colors = [0xf4f4f4, 0xe53935, 0x1e88e5, 0x263238, 0xfdd835, 0x43a047, 0xfb8c00, 0x8e24aa];
     const addObj = (obj, kind) => { if (!obj) return; obj.userData.kind = kind; group.add(obj); placed++; };
     const furn = (kind, x, z, yaw) => {
       yaw = yaw || 0;
@@ -7343,22 +7347,85 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     };
   }
 
+  function brighten(mesh, color, glow) {
+    const m = mesh && mesh.material;
+    if (!m) return mesh;
+    if (m.color && m.color.setHex) m.color.setHex(color);
+    if (m.emissive && m.emissive.setHex) { m.emissive.setHex(color); m.emissiveIntensity = glow; }
+    if (m.roughness != null) m.roughness = 0.48;
+    if (m.metalness != null) m.metalness = 0.08;
+    return mesh;
+  }
+  function glassPane(kit, w, h, d) {
+    const m = solid(kit, w, h, d, 0xb9e6f5);
+    const mat = m.material;
+    if (mat) {
+      mat.transparent = true;
+      mat.opacity = 0.46;
+      mat.depthWrite = false;
+      if (mat.color && mat.color.setHex) mat.color.setHex(0x9fd8ea);
+      if (mat.emissive && mat.emissive.setHex) { mat.emissive.setHex(0x1a4458); mat.emissiveIntensity = 0.55; }
+      if (mat.roughness != null) mat.roughness = 0.06;
+    }
+    return m;
+  }
+  function roundWheel(kit, bits) {
+    const g = empty(bits);
+    const n = 10;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const tread = brighten(solid(kit, 0.2, 0.16, 0.26, 0x222222), 0x2a2a2a, 0.2);
+      tread.position.set(Math.cos(a) * 0.24, Math.sin(a) * 0.24, 0);
+      tread.rotation.z = a;
+      g.add(tread);
+    }
+    g.add(brighten(solid(kit, 0.22, 0.22, 0.28, 0xd8dde4), 0xe8eef4, 0.55));
+    return g;
+  }
   function showCar(kit, bits, color, x, z, yaw) {
     const root = empty(bits);
     const put = (m, px, py, pz) => { m.position.x += px; m.position.y += py; m.position.z += pz; root.add(m); };
-    put(solid(kit, 4.2, 0.48, 1.7, color), 0, 0.42, 0);
-    put(solid(kit, 1.7, 0.08, 1.55, color), 0.9, 0.9, 0);
-    put(solid(kit, 1.85, 0.62, 1.5, 0x10161c), -0.25, 0.95, 0);
-    put(solid(kit, 1.45, 0.06, 1.15, 0xd7eef8), -0.2, 1.28, 0);
-    put(solid(kit, 0.06, 0.42, 1.28, 0xd7eef8), 0.62, 1.05, 0);
-    put(solid(kit, 0.06, 0.36, 1.15, 0xb7d0dc), -1.15, 1.02, 0);
-    put(solid(kit, 1.2, 0.32, 0.06, 0xd7eef8), -0.2, 1.08, 0.78);
-    put(solid(kit, 1.2, 0.32, 0.06, 0xd7eef8), -0.2, 1.08, -0.78);
-    for (const [wx, wz] of [[-1.35, 1.12], [1.25, 1.12], [-1.35, -1.12], [1.25, -1.12]]) put(solid(kit, 0.7, 0.7, 0.32, 0x141414), wx, 0.34, wz);
-    put(solid(kit, 0.12, 0.16, 0.32, 0xfff6c8), 2.12, 0.55, 0.55);
-    put(solid(kit, 0.12, 0.16, 0.32, 0xfff6c8), 2.12, 0.55, -0.55);
-    put(solid(kit, 0.1, 0.14, 0.36, 0xe02020), -2.12, 0.58, 0.55);
-    put(solid(kit, 0.1, 0.14, 0.36, 0xe02020), -2.12, 0.58, -0.55);
+    const body = brighten(solid(kit, 4.05, 0.42, 1.62, color), color, 0.42);
+    put(body, 0, 0.5, 0);
+    const skirt = brighten(solid(kit, 3.7, 0.16, 1.72, color), color, 0.28);
+    put(skirt, 0, 0.28, 0);
+    const hood = brighten(solid(kit, 1.45, 0.1, 1.48, color), color, 0.48);
+    hood.rotation.z = -0.38;
+    put(hood, 1.15, 0.78, 0);
+    const nose = brighten(solid(kit, 0.35, 0.22, 1.5, color), color, 0.4);
+    put(nose, 1.95, 0.48, 0);
+    const cabin = brighten(solid(kit, 1.55, 0.48, 1.42, color), color, 0.36);
+    put(cabin, -0.35, 0.92, 0);
+    const roof = brighten(solid(kit, 1.15, 0.08, 1.22, color), color, 0.5);
+    put(roof, -0.4, 1.2, 0);
+    for (const side of [0.78, -0.78]) {
+      const bevel = brighten(solid(kit, 3.3, 0.08, 0.08, color), color, 0.4);
+      bevel.rotation.x = Math.PI / 4;
+      put(bevel, 0.1, 0.72, side);
+    }
+    const wind = glassPane(kit, 0.08, 0.58, 1.32);
+    wind.rotation.z = 0.72;
+    put(wind, 0.48, 1.08, 0);
+    const rear = glassPane(kit, 0.08, 0.42, 1.2);
+    rear.rotation.z = -0.55;
+    put(rear, -1.15, 1.02, 0);
+    put(glassPane(kit, 1.05, 0.32, 0.05), -0.35, 1.05, 0.72);
+    put(glassPane(kit, 1.05, 0.32, 0.05), -0.35, 1.05, -0.72);
+    for (const [wx, wz] of [[-1.25, 0.92], [1.15, 0.92], [-1.25, -0.92], [1.15, -0.92]]) {
+      const well = brighten(solid(kit, 0.7, 0.28, 0.22, 0x141414), 0x1a1a1a, 0.15);
+      put(well, wx, 0.34, wz > 0 ? 0.72 : -0.72);
+      const wheel = roundWheel(kit, bits);
+      wheel.position.set(wx, 0.34, wz);
+      root.add(wheel);
+    }
+    for (const wz of [0.52, -0.52]) {
+      const lamp = brighten(solid(kit, 0.12, 0.14, 0.3, 0xfff4c2), 0xfff6d0, 1.7);
+      put(lamp, 2.08, 0.58, wz);
+    }
+    for (const wz of [0.55, -0.55]) {
+      const tail = brighten(solid(kit, 0.1, 0.12, 0.32, 0xff2a2a), 0xff3030, 1.6);
+      put(tail, -2.05, 0.58, wz);
+    }
     root.position.set(x, 0, z);
     root.rotation.y = yaw || 0;
     root.userData.kind = 'car';
@@ -7457,6 +7524,8 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
   const Act = {
     on: false, g: null, phase: '', t: 0, saved: [], routes: {}, door: null, stairs: null, doorAng: 0,
     start(g) {
+      armBreachCam();
+      armHostage();
       if (!g || !g.ops) return;
       this.stop();
       this.g = g;
@@ -7561,16 +7630,45 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     tick(dt) {
       if (!this.on || !this.g) return;
       this.t += dt;
-      const shot = ({
-        deploy: { d0: 22, d1: 11, pitch: 0.5, yaw: 0.55, hold: 0.7 },
-        enter: { d0: 18, d1: 10, pitch: 0.44, yaw: 0.3, hold: 0.45 },
-        stack: { d0: 14, d1: 6.4, pitch: 0.32, yaw: 1.15, hold: 0.8 },
-        stairs: { d0: 13, d1: 6, pitch: 0.28, yaw: 1.25, hold: 0.4 },
-        breach: { d0: 12, d1: 5.2, pitch: 0.3, yaw: 0.95, hold: 0.55 }
-      })[this.phase] || { d0: 16, d1: 9, pitch: 0.4, yaw: 0.6, hold: 0.5 };
-      const moving = this.t > shot.hold;
-      const u = Math.max(0, Math.min(1, (this.t - shot.hold) / 4.4));
-      const ease = u * u * (3 - 2 * u);
+      const audio = window.__zuluCutAudio;
+      const voiceT = audio && audio.currentTime > 0.05 ? audio.currentTime : this.t;
+      const voiceDur = audio && isFinite(audio.duration) && audio.duration > 0.4 ? audio.duration : 4.6;
+      const list = ({
+        deploy: [
+          { look: 'wide', dist: 20, pitch: 0.58, yaw: 0.2, push: 0, y: 1.1 },
+          { look: 'lead', dist: 6.2, pitch: 0.16, yaw: 0.95, push: 0.6, y: 1.35 },
+          { look: 'squad', dist: 11, pitch: 0.36, yaw: 0.4, push: 1, y: 1.0 }
+        ],
+        enter: [
+          { look: 'wide', dist: 18, pitch: 0.5, yaw: 0.15, push: 0, y: 1.2 },
+          { look: 'lead', dist: 6.4, pitch: 0.14, yaw: 1.2, push: 0.5, y: 1.35 },
+          { look: 'squad', dist: 9, pitch: 0.32, yaw: 0.55, push: 1, y: 1.05 }
+        ],
+        stack: [
+          { look: 'door', dist: 6.2, pitch: 0.18, yaw: 1.35, push: 0.25, y: 1.2 },
+          { look: 'lead', dist: 5.8, pitch: 0.12, yaw: 0.35, push: 0.4, y: 1.4 },
+          { look: 'door', dist: 7.2, pitch: 0.24, yaw: 1.05, push: 1, y: 1.15 }
+        ],
+        stairs: [
+          { look: 'stairs', dist: 8, pitch: 0.2, yaw: 1.25, push: 0.2, y: 1.3 },
+          { look: 'lead', dist: 6, pitch: 0.14, yaw: 0.45, push: 0.5, y: 1.4 },
+          { look: 'stairs', dist: 9, pitch: 0.28, yaw: 1.05, push: 1, y: 1.4 }
+        ],
+        breach: [
+          { look: 'door', dist: 9, pitch: 0.34, yaw: 0.7, push: 0, y: 1.2 },
+          { look: 'door', dist: 5.6, pitch: 0.16, yaw: 1.5, push: 0.8, y: 1.25 },
+          { look: 'lead', dist: 6.2, pitch: 0.18, yaw: 0.4, push: 1, y: 1.35 }
+        ]
+      })[this.phase] || [
+        { look: 'squad', dist: 12, pitch: 0.4, yaw: 0.5, push: 0.6, y: 1 }
+      ];
+      const span = voiceDur / list.length;
+      const idx = Math.max(0, Math.min(list.length - 1, Math.floor(voiceT / span)));
+      const shot = list[idx];
+      const local = Math.max(0, Math.min(1, (voiceT - idx * span) / span));
+      const ease = local * local * (3 - 2 * local);
+      const moving = shot.push > 0.15;
+      window.__cutShot = (this.phase || 'deploy') + ':' + shot.look + ':' + idx;
       const L = this.g.level, block = this.block;
       const inside = (x, z) => {
         const ix = Math.floor(x), iz = Math.floor(z);
@@ -7602,16 +7700,20 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
           s.o.__cutY = along > 0 ? Math.min(1.3, along * 0.31) : 0;
         } else s.o.__cutY = 0;
       });
-      this.doorAng = (this.phase === 'breach' && u > 0.25) ? Math.min(1.5, (u - 0.25) * 2.2) : 0;
+      this.doorAng = (this.phase === 'breach' && idx > 0) ? Math.min(1.5, (idx === 1 ? ease : 1) * 1.5) : 0;
       const cam = this.g.env && this.g.env.cam;
       const ops = this.saved;
       if (cam && ops.length) {
-        const x = ops.reduce((sum, s) => sum + s.o.x, 0) / ops.length;
-        const z = ops.reduce((sum, s) => sum + s.o.z, 0) / ops.length;
-        cam.target.set(x, this.phase === 'stairs' ? 1.2 : 0.9, z);
-        cam.dist = shot.d0 + (shot.d1 - shot.d0) * ease;
+        const lead = ops[0].o;
+        let x = ops.reduce((sum, s) => sum + s.o.x, 0) / ops.length;
+        let z = ops.reduce((sum, s) => sum + s.o.z, 0) / ops.length;
+        if (shot.look === 'lead') { x = lead.x; z = lead.z; }
+        else if (shot.look === 'door' && this.doorAt) { x = this.doorAt.x; z = this.doorAt.z; }
+        else if (shot.look === 'stairs' && this.stairBase) { x = this.stairBase.x; z = this.stairBase.z; }
+        cam.target.set(x, shot.y, z);
+        cam.dist = shot.dist - ease * shot.push * 1.6;
         cam.pitch = shot.pitch;
-        cam.yaw = shot.yaw + ease * 0.2;
+        cam.yaw = shot.yaw + ease * 0.18;
       }
     },
     stop() {
@@ -7745,6 +7847,193 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     }
   }
 
+  function piece(kit, bits, kind, tint) {
+    const root = empty(bits);
+    const put = (m, px, py, pz) => { m.position.x += px; m.position.y += py; m.position.z += pz; root.add(m); };
+    const wood = tint.wood, cloth = tint.cloth, leaf = tint.leaf;
+    if (kind === 'sofa') {
+      put(brighten(solid(kit, 2.1, 0.42, 0.85, cloth), cloth, 0.32), 0, 0.32, 0);
+      put(brighten(solid(kit, 2.1, 0.7, 0.16, cloth), cloth, 0.28), 0, 0.7, -0.34);
+      put(brighten(solid(kit, 0.16, 0.62, 0.85, cloth), cloth, 0.28), -1.0, 0.4, 0);
+      put(brighten(solid(kit, 0.16, 0.62, 0.85, cloth), cloth, 0.28), 1.0, 0.4, 0);
+      put(brighten(solid(kit, 0.08, 0.22, 0.08, wood), wood, 0.25), -0.9, 0, 0.32);
+      put(brighten(solid(kit, 0.08, 0.22, 0.08, wood), wood, 0.25), 0.9, 0, 0.32);
+    } else if (kind === 'chair') {
+      put(brighten(solid(kit, 0.48, 0.08, 0.48, cloth), cloth, 0.3), 0, 0.46, 0);
+      put(brighten(solid(kit, 0.48, 0.55, 0.08, cloth), cloth, 0.3), 0, 0.7, -0.2);
+      for (const [lx, lz] of [[-0.18, -0.18], [0.18, -0.18], [-0.18, 0.18], [0.18, 0.18]]) put(brighten(solid(kit, 0.06, 0.46, 0.06, wood), wood, 0.25), lx, 0, lz);
+    } else if (kind === 'shelf') {
+      for (let i = 0; i < 4; i++) put(brighten(solid(kit, 1.15, 0.06, 0.38, wood), wood, 0.3), 0, 0.28 + i * 0.38, 0);
+      put(brighten(solid(kit, 0.06, 1.5, 0.38, wood), wood, 0.25), -0.55, 0, 0);
+      put(brighten(solid(kit, 0.06, 1.5, 0.38, wood), wood, 0.25), 0.55, 0, 0);
+      put(brighten(solid(kit, 0.35, 0.22, 0.22, 0xc4562a), 0xc4562a, 0.35), -0.2, 0.5, 0);
+      put(brighten(solid(kit, 0.28, 0.28, 0.2, 0x2f6b4f), 0x2f6b4f, 0.3), 0.22, 0.95, 0);
+    } else if (kind === 'plant') {
+      put(brighten(solid(kit, 0.38, 0.32, 0.38, 0xc4a574), 0xc4a574, 0.3), 0, 0.16, 0);
+      put(brighten(solid(kit, 0.7, 0.9, 0.7, leaf), leaf, 0.35), 0, 0.7, 0);
+      put(brighten(solid(kit, 0.4, 0.45, 0.4, leaf), leaf, 0.4), 0.15, 1.15, 0);
+    } else if (kind === 'bed') {
+      put(brighten(solid(kit, 1.2, 0.28, 2.0, wood), wood, 0.25), 0, 0.2, 0);
+      put(brighten(solid(kit, 1.15, 0.18, 1.9, cloth), cloth, 0.3), 0, 0.4, 0);
+      put(brighten(solid(kit, 0.7, 0.16, 0.4, 0xf7f4ee), 0xf7f4ee, 0.4), 0, 0.55, -0.7);
+    } else {
+      put(brighten(solid(kit, 1.5, 0.08, 0.7, wood), wood, 0.34), 0, 0.74, 0);
+      for (const [lx, lz] of [[-0.66, -0.26], [0.66, -0.26], [-0.66, 0.26], [0.66, 0.26]]) put(brighten(solid(kit, 0.07, 0.74, 0.07, wood), wood, 0.22), lx, 0, lz);
+      put(brighten(solid(kit, 0.42, 0.32, 0.05, 0x1c2430), 0x9fd4ea, 0.45), 0.2, 0.96, -0.08);
+    }
+    root.userData.kind = kind;
+    return root;
+  }
+  function furnishKept(g) {
+    armBreachCam();
+    armHostage();
+    if (!g || !g.level || !g.zuluStage || !g.zuluStage.kept) return;
+    const scene = g.env && g.env.scene;
+    const L = g.level;
+    const bits = bitsOf(scene);
+    const kit = kitOf(scene);
+    if (!bits || !kit.box || !kit.Mesh) return;
+    const label = g.zuluStage.label || '';
+    const theme = /lobby|hall|gate|concourse|gangway/i.test(label) ? 'lobby' : /residence|quarters|safe|bunk|farm|lodge|ranch house/i.test(label) ? 'home' : /yard|store|warehouse|cargo|hold|vault|container/i.test(label) ? 'store' : 'office';
+    const tint = theme === 'lobby' ? { wood: 0xc48a4a, cloth: 0xb23a3a, leaf: 0x3e9a4a } : theme === 'home' ? { wood: 0x8d5a32, cloth: 0x3d6b52, leaf: 0x2f8a44 } : theme === 'store' ? { wood: 0x6d5840, cloth: 0x8a7048, leaf: 0x4a7a3a } : { wood: 0xa56b3c, cloth: 0x2c3e50, leaf: 0x2e7d42 };
+    let group = scene.getObjectByName('zfurn');
+    if (!group) { group = empty(bits); group.name = 'zfurn'; scene.add(group); }
+    while (group.children.length) group.remove(group.children[0]);
+    const nearDoor = (x, z) => (L.doors || []).some((d) => Math.max(Math.abs(d.x - x), Math.abs(d.y - z)) <= 1);
+    const open = (x, z) => x > 0 && z > 0 && x < L.W - 1 && z < L.H - 1 && L.type[z * L.W + x] === 0 && !(L.ext && L.ext[z * L.W + x]) && !nearDoor(x, z);
+    const spots = [];
+    scene.updateMatrixWorld(true);
+    scene.traverse((o) => {
+      if (!o.isInstancedMesh || !o.geometry || !o.getMatrixAt) return;
+      if (!o.geometry.boundingBox && o.geometry.computeBoundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox;
+      if (!bb) return;
+      const sx = (bb.max.x - bb.min.x) * (o.scale ? o.scale.x : 1);
+      const sy = (bb.max.y - bb.min.y) * (o.scale ? o.scale.y : 1);
+      if (sy < 0.7 || sy > 1.5 || sx < 0.7 || sx > 1.6) return;
+      const local = o.matrix.clone();
+      for (let i = 0; i < o.count; i++) {
+        o.getMatrixAt(i, local);
+        const world = local.clone();
+        world.premultiply(o.matrixWorld);
+        const ix = Math.floor(world.elements[12]), iz = Math.floor(world.elements[14]);
+        if (!open(ix, iz)) continue;
+        local.elements[13] = -8;
+        o.setMatrixAt(i, local);
+        spots.push({ x: ix + 0.5, z: iz + 0.5 });
+      }
+      if (o.instanceMatrix) o.instanceMatrix.needsUpdate = true;
+    });
+    const used = new Set();
+    const drop = (kind, x, z, yaw) => {
+      const p = piece(kit, bits, kind, tint);
+      p.position.set(x, 0, z);
+      p.rotation.y = yaw || 0;
+      group.add(p);
+    };
+    let n = 0;
+    for (const s of spots) {
+      if (n >= 7) break;
+      const key = Math.floor(s.z) * L.W + Math.floor(s.x);
+      if (used.has(key)) continue;
+      used.add(key);
+      drop(theme === 'home' && n % 3 === 2 ? 'bed' : 'desk', s.x, s.z, (n % 2) * 1.2);
+      const cx = Math.floor(s.x) + 1, cz = Math.floor(s.z);
+      if (open(cx, cz)) drop('chair', cx + 0.5, cz + 0.5, Math.PI);
+      n++;
+    }
+    const rooms = new Map();
+    for (let i = 0; i < L.W * L.H; i++) {
+      if (L.type[i] !== 0 || (L.ext && L.ext[i]) || !L.room || !L.room[i]) continue;
+      const id = L.room[i];
+      if (!rooms.has(id)) rooms.set(id, []);
+      rooms.get(id).push(i);
+    }
+    for (const cells of rooms.values()) {
+      if (n >= 12 || cells.length < 8) continue;
+      const c = cells[Math.floor(cells.length / 2)];
+      const x = c % L.W, z = (c / L.W) | 0;
+      if (!open(x, z) || used.has(c)) continue;
+      used.add(c);
+      const kind = spots.length < 3 && theme !== 'store' ? 'desk' : (theme === 'store' || theme === 'office' ? 'shelf' : 'sofa');
+      drop(kind, x + 0.5, z + 0.5, 0.4);
+      const p = cells[1] || cells[0];
+      const px = p % L.W, pz = (p / L.W) | 0;
+      if (open(px, pz)) drop('plant', px + 0.5, pz + 0.5, 0);
+      n++;
+    }
+    g.zuluFurn = { n, theme, spots: spots.length };
+  }
+  function armHostage() {
+    const g = window.__game;
+    if (!g) return;
+    const P = g.constructor.prototype;
+    if (P.__hostageEscort || !P.civ || !P.checkObjectives || !P.objectiveText) return;
+    P.__hostageEscort = true;
+    const civ = P.civ, check = P.checkObjectives, text = P.objectiveText;
+    P.objectiveText = function () {
+      if (this.mission && this.mission.mode === 'hostage') {
+        const t = this.enemies.filter((o) => o.alive).length;
+        const alive = (this.civs || []).filter((o) => o.kind === 'hostage' && o.alive);
+        const out = alive.filter((o) => o.extracted).length;
+        return 'Escort hostages to the EXIT ' + out + '/' + alive.length + ' · Hostiles ' + t;
+      }
+      return text.call(this);
+    };
+    P.checkObjectives = function () {
+      if (!(this.mission && this.mission.mode === 'hostage') || this.over) return check.call(this);
+      const hs = (this.civs || []).filter((o) => o.kind === 'hostage');
+      if (!this.opsAlive.length) return check.call(this);
+      if (hs.length && hs.some((o) => !o.alive)) {
+        this.over = { win: false, wait: 1.6, reason: 'A hostage was killed.' };
+        this.endTime = this.time;
+        this.toast('HOSTAGE KILLED — MISSION FAILED', 'bad');
+        return;
+      }
+      const alive = hs.filter((o) => o.alive);
+      if (alive.length && alive.every((o) => o.extracted)) {
+        this.over = { win: true, wait: 1.6 };
+        this.endTime = this.time;
+        this.toast('HOSTAGES EXTRACTED', 'good');
+      }
+    };
+    P.civ = function (e, t) {
+      if (!(e && e.kind === 'hostage' && this.mission && this.mission.mode === 'hostage')) return civ.call(this, e, t);
+      if (!e.alive || e.extracted) return;
+      const near = (this.ops || []).find((s) => s.alive && Math.hypot(s.x - e.x, s.z - e.z) < 1.7);
+      if (!e.secured && near) {
+        e.secured = true;
+        e.out = true;
+        if (e.ch && e.ch.ring && e.ch.ring.material && e.ch.ring.material.color) e.ch.ring.material.color.setHex(0x3ddc78);
+        this.toast(near.name + ': Hostage with you — take them to the EXIT', 'good');
+      }
+      if (!e.secured) return;
+      e.followT = (e.followT || 0) - t;
+      const zones = this.level.zones && this.level.zones.X;
+      const exits = zones && zones.length ? zones : (this.level.doors || []).filter((d) => d.ext).map((d) => [d.x, d.y]);
+      const nearest = (x, z) => {
+        let best = null, dist = 1e9;
+        for (let i = 0; i < exits.length; i++) {
+          const d = Math.hypot(x - (exits[i][0] + 0.5), z - (exits[i][1] + 0.5));
+          if (d < dist) { dist = d; best = exits[i]; }
+        }
+        return [dist, best];
+      };
+      if (nearest(e.x, e.z)[0] < 1.15) { e.extracted = true; e.path = []; return; }
+      let leader = null, ld = 1e9;
+      for (const f of this.ops) if (f.alive) {
+        const d = Math.hypot(f.x - e.x, f.z - e.z);
+        if (d < ld) { ld = d; leader = f; }
+      }
+      if (leader && e.followT <= 0 && this.pathTo && this.level.nearestPassable) {
+        e.followT = 0.45;
+        const goExit = nearest(leader.x, leader.z)[0] < 2.6 && ld < 7;
+        const spot = goExit ? nearest(e.x, e.z)[1] : [Math.floor(leader.x - Math.sin(leader.ang) * 1.6), Math.floor(leader.z - Math.cos(leader.ang) * 1.6)];
+        if (spot) this.pathTo(e, this.level.nearestPassable(spot[0], spot[1]), {});
+      }
+      if (this.moveUnit) this.moveUnit(e, t);
+    };
+  }
   function armBreachCam() {
     const g = window.__game;
     if (!g) return;
@@ -7759,6 +8048,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
     P.__breachCam = true;
   }
   window.__zuluReshape = reshape;
+  window.__zuluFurnish = furnishKept;
   window.__zuluStageLine = stageLine;
   window.__zuluStageAudio = stageAudio;
   window.__zuluAct = Act;
@@ -7769,6 +8059,7 @@ vec2 fuv = vFogW.xz / uFogSize; float fv = texture2D(uFog, fuv).r; if (fuv.x<0.|
   }
   const wait = setInterval(() => {
     armBreachCam();
+    armHostage();
     if (window.__app && window.__app.menus) { clearInterval(wait); boot(); }
   }, 40);
 })();

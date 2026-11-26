@@ -361,6 +361,7 @@
     }
     g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id, kept: !isLot };
     if (isLot && window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
+    if (!isLot && window.__zuluFurnish) { try { window.__zuluFurnish(g); } catch (err) { window.__furnErr = String(err && err.stack || err); } }
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
@@ -545,7 +546,7 @@
       document.body.append(root);
       let i = 0, audio = null, raf = 0, t0 = 0;
       const ops = (g.ops || []).filter((o) => o.alive);
-      const stopAudio = () => { if (!audio) return; try { audio.pause(); } catch (e) {} audio.src = ''; audio = null; };
+      const stopAudio = () => { if (!audio) return; try { audio.pause(); } catch (e) {} audio.src = ''; if (window.__zuluCutAudio === audio) window.__zuluCutAudio = null; audio = null; };
       const aim = (k) => {
         const wide = k === 0;
         const op = ops.length ? ops[k % ops.length] : null;
@@ -582,6 +583,7 @@
         t0 = performance.now();
         if (c.file) {
           audio = new Audio(c.file);
+          window.__zuluCutAudio = audio;
           const mix = window.__audio && window.__audio.getMix && window.__audio.getMix();
           audio.volume = Math.max(0, Math.min(1, ((mix && mix.voice) || 0.8) * ((mix && mix.master) || 0.8)));
           audio.onended = () => { if (root.isConnected) setTimeout(advance, 400); };
