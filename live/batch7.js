@@ -455,7 +455,8 @@
     const label = stage && stage.label;
     const recipe = stage && stage.recipe;
     const shape = shapeFor(label, recipe, stage && stage.scenery);
-    const enclosed = shape === 'lot' || shape === 'hall' || shape === 'offices' || shape === 'rooms' || shape === 'corridor' || shape === 'single' || shape === 'lanes' || shape === 'stalls' || shape === 'rows';
+    if (shape !== 'lot') return;
+    const enclosed = true;
     const W = L.W, H = L.H;
     const old = scene.getObjectByName('zstage');
     if (old) scene.remove(old);
@@ -601,7 +602,7 @@
       root.rotation.y = yaw;
       addObj(root, kind);
     };
-    if (shape === 'lot' && kit.car) {
+    if (shape === 'lot' && canSolid) {
       const floorAt = (x, z) => {
         const ix = Math.floor(x), iz = Math.floor(z);
         if (ix < 2 || iz < 2 || ix >= W - 2 || iz >= H - 2) return false;
@@ -616,9 +617,7 @@
         }
         for (let x = minx + 2; x < maxx - 4; x += 4.6) {
           if (!floorAt(x + 1.5, z + 0.6)) continue;
-          const src = (n % 6 === 0 && kit.van) ? kit.van : kit.car;
-          const car = vehicle(src, colors[n % colors.length], x + 1.8, 0.1, z + 0.6, Math.PI / 2);
-          car.userData.kind = 'car';
+          const car = showCar(kit, bits, colors[n % colors.length], x + 1.8, z + 0.6, Math.PI / 2);
           group.add(car);
           cars++;
           placed++;
@@ -698,6 +697,104 @@
     };
   }
 
+  function showCar(kit, bits, color, x, z, yaw) {
+    const root = empty(bits);
+    const put = (m, px, py, pz) => { m.position.x += px; m.position.y += py; m.position.z += pz; root.add(m); };
+    put(solid(kit, 4.2, 0.48, 1.7, color), 0, 0.42, 0);
+    put(solid(kit, 1.7, 0.08, 1.55, color), 0.9, 0.9, 0);
+    put(solid(kit, 1.85, 0.62, 1.5, 0x10161c), -0.25, 0.95, 0);
+    put(solid(kit, 1.45, 0.06, 1.15, 0xd7eef8), -0.2, 1.28, 0);
+    put(solid(kit, 0.06, 0.42, 1.28, 0xd7eef8), 0.62, 1.05, 0);
+    put(solid(kit, 0.06, 0.36, 1.15, 0xb7d0dc), -1.15, 1.02, 0);
+    put(solid(kit, 1.2, 0.32, 0.06, 0xd7eef8), -0.2, 1.08, 0.78);
+    put(solid(kit, 1.2, 0.32, 0.06, 0xd7eef8), -0.2, 1.08, -0.78);
+    for (const [wx, wz] of [[-1.35, 1.12], [1.25, 1.12], [-1.35, -1.12], [1.25, -1.12]]) put(solid(kit, 0.7, 0.7, 0.32, 0x141414), wx, 0.34, wz);
+    put(solid(kit, 0.12, 0.16, 0.32, 0xfff6c8), 2.12, 0.55, 0.55);
+    put(solid(kit, 0.12, 0.16, 0.32, 0xfff6c8), 2.12, 0.55, -0.55);
+    put(solid(kit, 0.1, 0.14, 0.36, 0xe02020), -2.12, 0.58, 0.55);
+    put(solid(kit, 0.1, 0.14, 0.36, 0xe02020), -2.12, 0.58, -0.55);
+    root.position.set(x, 0, z);
+    root.rotation.y = yaw || 0;
+    root.userData.kind = 'car';
+    return root;
+  }
+  function obstacleGrid(g) {
+    const L = g.level, W = L.W, H = L.H;
+    const block = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) {
+      const t = L.type[i];
+      if (t === 1 || t === 2 || t === 3 || t === 4) block[i] = 1;
+    }
+    const scene = g.env && g.env.scene;
+    if (!scene) return block;
+    scene.updateMatrixWorld(true);
+    scene.traverse((o) => {
+      if (!o.isMesh || o.isSkinnedMesh || !o.geometry) return;
+      let p = o, actor = false, skip = false;
+      while (p) {
+        const k = p.userData && p.userData.kind;
+        if (k === 'stairs' || k === 'line' || k === 'ramp' || p.name === 'zact') skip = true;
+        if (p.isSkinnedMesh || (p.children && p.children.some((c) => c.isSkinnedMesh))) actor = true;
+        p = p.parent;
+      }
+      if (actor || skip) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const bb = o.geometry.boundingBox, e = o.matrixWorld.elements;
+      let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9, minz = 1e9, maxz = -1e9;
+      for (const lx of [bb.min.x, bb.max.x]) for (const ly of [bb.min.y, bb.max.y]) for (const lz of [bb.min.z, bb.max.z]) {
+        const wx = e[0] * lx + e[4] * ly + e[8] * lz + e[12];
+        const wy = e[1] * lx + e[5] * ly + e[9] * lz + e[13];
+        const wz = e[2] * lx + e[6] * ly + e[10] * lz + e[14];
+        if (wx < minx) minx = wx; if (wx > maxx) maxx = wx;
+        if (wy < miny) miny = wy; if (wy > maxy) maxy = wy;
+        if (wz < minz) minz = wz; if (wz > maxz) maxz = wz;
+      }
+      if (maxy - miny < 0.4 || maxy - miny > 3 || maxx - minx > 6 || maxz - minz > 6) return;
+      const x0 = Math.max(0, Math.floor(minx)), x1 = Math.min(W - 1, Math.floor(maxx));
+      const z0 = Math.max(0, Math.floor(minz)), z1 = Math.min(H - 1, Math.floor(maxz));
+      for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) if (L.type[z * W + x] === 0) block[z * W + x] = 1;
+    });
+    return block;
+  }
+  function cutRoute(L, block, x0, z0, x1, z1) {
+    const W = L.W, H = L.H, N = W * H;
+    const pass = (i) => i >= 0 && i < N && !block[i] && (L.type[i] === 0 || L.type[i] === 5);
+    const near = (x, z) => {
+      const ix = Math.max(0, Math.min(W - 1, Math.floor(x))), iz = Math.max(0, Math.min(H - 1, Math.floor(z)));
+      const s = iz * W + ix;
+      if (pass(s)) return s;
+      for (let r = 1; r < 8; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+        const n = (iz + dz) * W + (ix + dx);
+        if (pass(n)) return n;
+      }
+      return s;
+    };
+    const start = near(x0, z0), goal = near(x1, z1);
+    const prev = new Int32Array(N);
+    prev.fill(-1);
+    const q = [start];
+    prev[start] = start;
+    let guard = 0;
+    while (q.length && prev[goal] < 0 && guard++ < N) {
+      const c = q.shift();
+      const x = c % W, y = (c / W) | 0;
+      const nxt = [x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1, y > 0 ? c - W : -1, y < H - 1 ? c + W : -1];
+      for (let k = 0; k < nxt.length; k++) {
+        const n = nxt[k];
+        if (n < 0 || prev[n] >= 0 || !pass(n)) continue;
+        prev[n] = c;
+        q.push(n);
+      }
+    }
+    if (prev[goal] < 0) return [{ x: x0, z: z0 }];
+    const cells = [];
+    let c = goal, safe = 0;
+    while (c !== start && safe++ < N) { cells.push(c); c = prev[c]; }
+    cells.push(start);
+    cells.reverse();
+    return cells.map((i) => ({ x: (i % W) + 0.5, z: ((i / W) | 0) + 0.5 }));
+  }
   function nearestFloor(L, x, z) {
     const W = L.W, H = L.H;
     const ix = Math.max(0, Math.min(W - 1, Math.floor(x)));
@@ -738,37 +835,40 @@
     layout(g) {
       const L = g.level;
       const ops = this.saved.map((s) => s.o);
-      let minz = L.H, maxz = 0, minx = L.W, maxx = 0, n = 0;
-      for (let y = 0; y < L.H; y++) for (let x = 0; x < L.W; x++) {
-        if (L.type[y * L.W + x] !== 0) continue;
-        if (L.ext && L.ext[y * L.W + x]) continue;
-        if (y < minz) minz = y;
-        if (y > maxz) maxz = y;
-        if (x < minx) minx = x;
-        if (x > maxx) maxx = x;
-        n++;
+      this.block = obstacleGrid(g);
+      const door = (L.doors || []).find((d) => !d.ext) || (L.doors || [])[0];
+      let dx = L.W / 2, dz = L.H / 2;
+      if (door) {
+        const tries = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        for (let k = 0; k < tries.length; k++) {
+          const nx = door.x + tries[k][0], nz = door.y + tries[k][1];
+          if (nx < 0 || nz < 0 || nx >= L.W || nz >= L.H) continue;
+          const c = nz * L.W + nx, t = L.type[c];
+          if ((t === 0 || t === 5) && !this.block[c]) { dx = nx + 0.5; dz = nz + 0.5; break; }
+        }
       }
-      if (!n) { minx = 2; maxx = L.W - 3; minz = 2; maxz = L.H - 3; }
-      const cx = (minx + maxx) / 2, cz = (minz + maxz) / 2;
-      const count = ops.length || 1;
-      const fan = (x, z, along) => ops.map((_, i) => nearestFloor(L, x + (along ? (i - (count - 1) / 2) * 0.95 : 0), z + (along ? 0 : (i - (count - 1) / 2) * 0.8)));
-      const south = fan(cx, minz + 1.2, true);
-      const mid = fan(cx, cz - 1, true);
-      const file = fan(cx + 0.4, cz, false);
-      const through = fan(cx + 0.4, cz + 4, false);
-      const up = fan(cx - 1, cz + 3, false);
-      this.routes = {
-        deploy: ops.map((_, i) => [south[i], mid[i]]),
-        enter: ops.map((_, i) => [south[i], mid[i]]),
-        stack: ops.map((_, i) => [mid[i], file[i]]),
-        stairs: ops.map((_, i) => [file[i] || mid[i], up[i]]),
-        breach: ops.map((_, i) => [file[i] || mid[i], through[i]])
+      let sx = dx, sz = dz;
+      for (let z = 2; z < L.H - 8 && sx === dx; z++) for (let x = 2; x < L.W - 2; x++) {
+        let ok = true;
+        for (let i = 0; i < 6; i++) {
+          const c = (z + i) * L.W + x;
+          if (L.type[c] !== 0 || this.block[c]) ok = false;
+        }
+        if (ok) { sx = x + 0.5; sz = z + 0.5; break; }
+      }
+      const slot = (x, z, i) => nearestFloor(L, x + ((i % 3) - 1) * 0.85, z + Math.floor(i / 3) * 0.85);
+      this.goals = {
+        deploy: ops.map((o, i) => slot(o.x, o.z + 5, i)),
+        enter: ops.map((o, i) => slot(o.x + 2, o.z + 3, i)),
+        stack: ops.map((_, i) => slot(dx - 1.2, dz, i)),
+        stairs: ops.map((_, i) => nearestFloor(L, sx + (i % 2) * 0.4, sz + 4.2)),
+        breach: ops.map((_, i) => slot(dx + 1.5, dz, i))
       };
-      this.spot = { stairs: up[0], door: file[0] || mid[0] };
+      this.spot = { stairs: { x: sx, z: sz }, door: { x: dx, z: dz } };
     },
     pieces(g) {
       const scene = g.env.scene;
-      const kit = g.__kit;
+      const kit = g.__kit || kitOf(scene);
       const bits = bitsOf(scene);
       if (!bits || !kit || !kit.box || !kit.Mesh) return;
       let group = scene.getObjectByName('zact');
@@ -777,9 +877,9 @@
       const base = this.spot && this.spot.stairs ? this.spot.stairs : { x: g.level.W / 2, z: g.level.H / 2 };
       this.stairBase = { x: base.x, z: base.z };
       const stairs = empty(bits);
-      for (let i = 0; i < 8; i++) {
-        const step = solid(kit, 3.2, 0.3, 0.78, 0xd5d0c6);
-        step.position.set(0, i * 0.3, i * 0.72);
+      for (let i = 0; i < 6; i++) {
+        const step = solid(kit, 1.4, 0.22, 0.72, 0xd5d0c6);
+        step.position.set(0, i * 0.22, i * 0.7);
         stairs.add(step);
       }
       stairs.position.set(base.x, 0, base.z);
@@ -789,67 +889,83 @@
       this.stairs = stairs;
       const door = solid(kit, 0.14, 2.3, 1.15, 0x6b4128);
       const doorAt = this.spot && this.spot.door ? this.spot.door : base;
-      door.position.set(doorAt.x + 1.2, 0, doorAt.z);
+      door.position.set(doorAt.x, 0, doorAt.z);
       door.userData.kind = 'door';
       door.visible = false;
       group.add(door);
       this.door = door;
-      this.doorAt = { x: doorAt.x + 1.2, z: doorAt.z };
+      this.doorAt = { x: doorAt.x, z: doorAt.z };
     },
     setPhase(name) {
       this.phase = name || 'deploy';
       this.t = 0;
       if (this.stairs) this.stairs.visible = this.phase === 'stairs';
       if (this.door) this.door.visible = this.phase === 'stack' || this.phase === 'breach';
-      const route = this.routes && this.routes[this.phase];
-      if (route) this.saved.forEach((s, i) => {
-        const a = route[i] && route[i][0];
-        if (!a) return;
-        s.o.x = a.x; s.o.z = a.z;
+      const g = this.g;
+      if (!g) return;
+      const goals = (this.goals && this.goals[this.phase]) || [];
+      this.block = this.block || obstacleGrid(g);
+      this.paths = this.saved.map((s, i) => {
+        const goal = goals[i] || goals[0] || { x: s.o.x, z: s.o.z };
+        return cutRoute(g.level, this.block, s.o.x, s.o.z, goal.x, goal.z);
       });
+      this.at = this.saved.map(() => 0);
+      window.__cutClip = 0;
     },
     tick(dt) {
       if (!this.on || !this.g) return;
       this.t += dt;
-      const dur = this.phase === 'breach' ? 3.2 : 2.8;
-      const u = Math.min(1, this.t / Math.max(0.2, dur));
-      const route = (this.routes && this.routes[this.phase]) || this.routes.deploy;
+      const shot = ({
+        deploy: { d0: 22, d1: 11, pitch: 0.5, yaw: 0.55, hold: 0.7 },
+        enter: { d0: 18, d1: 10, pitch: 0.44, yaw: 0.3, hold: 0.45 },
+        stack: { d0: 14, d1: 6.4, pitch: 0.32, yaw: 1.15, hold: 0.8 },
+        stairs: { d0: 13, d1: 6, pitch: 0.28, yaw: 1.25, hold: 0.4 },
+        breach: { d0: 12, d1: 5.2, pitch: 0.3, yaw: 0.95, hold: 0.55 }
+      })[this.phase] || { d0: 16, d1: 9, pitch: 0.4, yaw: 0.6, hold: 0.5 };
+      const moving = this.t > shot.hold;
+      const u = Math.max(0, Math.min(1, (this.t - shot.hold) / 4.4));
+      const ease = u * u * (3 - 2 * u);
+      const L = this.g.level, block = this.block;
+      const inside = (x, z) => {
+        const ix = Math.floor(x), iz = Math.floor(z);
+        if (ix < 0 || iz < 0 || ix >= L.W || iz >= L.H) return true;
+        const c = iz * L.W + ix;
+        return !!(block && block[c] && L.type[c] !== 5);
+      };
       this.saved.forEach((s, i) => {
-        const seg = route && route[i];
-        if (!seg) return;
-        const a = seg[0], b = seg[1];
-        s.o.x = a.x + (b.x - a.x) * u;
-        s.o.z = a.z + (b.z - a.z) * u;
-        const dx = b.x - a.x, dz = b.z - a.z;
-        if (Math.hypot(dx, dz) > 0.05) s.o.ang = Math.atan2(dx, dz);
-        s.o.moving = u < 0.98;
-        s.o.mv = 'sprint';
-        s.o.__cutY = this.phase === 'stairs' ? Math.sin(u * Math.PI) * 1.15 : 0;
+        const path = this.paths && this.paths[i];
+        if (!path || !moving) { s.o.moving = false; return; }
+        let at = this.at[i] || 0;
+        let left = 2.1 * dt;
+        while (left > 0.001 && at < path.length - 1) {
+          const b = path[at + 1];
+          const dx = b.x - s.o.x, dz = b.z - s.o.z;
+          const dist = Math.hypot(dx, dz) || 0.001;
+          const step = Math.min(left, dist);
+          const nx = s.o.x + (dx / dist) * step, nz = s.o.z + (dz / dist) * step;
+          if (inside(nx, nz)) { window.__cutClip = (window.__cutClip || 0) + 1; break; }
+          s.o.x = nx; s.o.z = nz;
+          s.o.ang = Math.atan2(dx, dz);
+          left -= step;
+          if (dist - step < 0.04) { at++; this.at[i] = at; }
+        }
+        s.o.moving = at < path.length - 1;
+        s.o.mv = 'jog';
+        if (this.phase === 'stairs' && this.stairBase) {
+          const along = s.o.z - this.stairBase.z;
+          s.o.__cutY = along > 0 ? Math.min(1.3, along * 0.31) : 0;
+        } else s.o.__cutY = 0;
       });
-      this.doorAng = (this.phase === 'breach' && u > 0.2) ? Math.min(1.6, (u - 0.2) * 2.4) : 0;
+      this.doorAng = (this.phase === 'breach' && u > 0.25) ? Math.min(1.5, (u - 0.25) * 2.2) : 0;
       const cam = this.g.env && this.g.env.cam;
       const ops = this.saved;
-      if (this.phase === 'stairs' && this.stairBase) {
-        const b = this.stairBase;
-        const count = ops.length || 1;
-        const step = Math.min(7, Math.floor(u * 8));
-        ops.forEach((s, i) => {
-          s.o.x = b.x + (i - (count - 1) / 2) * 0.45;
-          s.o.z = b.z + 0.2 + step * 0.72;
-          s.o.__cutY = 0.2 + step * 0.3;
-          s.o.ang = 0;
-          s.o.moving = u < 0.98;
-          s.o.mv = 'sprint';
-        });
-      }
       if (cam && ops.length) {
         const x = ops.reduce((sum, s) => sum + s.o.x, 0) / ops.length;
         const z = ops.reduce((sum, s) => sum + s.o.z, 0) / ops.length;
-        const y = this.phase === 'stairs' ? 1.3 : 0.8;
-        cam.target.set(x, y, z);
-        cam.dist = this.phase === 'stairs' ? 9 : 12;
-        cam.pitch = 0.42;
-        cam.yaw = (this.phase === 'breach' || this.phase === 'stairs') ? 1.2 : 0.9;
+        cam.target.set(x, this.phase === 'stairs' ? 1.2 : 0.9, z);
+        cam.dist = shot.d0 + (shot.d1 - shot.d0) * ease;
+        cam.pitch = shot.pitch;
+        cam.yaw = shot.yaw + ease * 0.2;
       }
     },
     stop() {
@@ -983,6 +1099,19 @@
     }
   }
 
+  function armBreachCam() {
+    const g = window.__game;
+    if (!g) return;
+    const P = g.constructor.prototype;
+    if (!P.openDoor || P.__breachCam) return;
+    const open = P.openDoor;
+    P.openDoor = function (door, unit, method) {
+      const held = (method === 'open' || method === 'enemy') && (this.breaches || []).some((b) => b.door === door && b.phase !== 'done' && (b.units || []).some((u) => u.alive && u.kind !== 'enemy'));
+      if (held) return;
+      return open.call(this, door, unit, method);
+    };
+    P.__breachCam = true;
+  }
   window.__zuluReshape = reshape;
   window.__zuluStageLine = stageLine;
   window.__zuluStageAudio = stageAudio;
@@ -992,5 +1121,8 @@
     window.__zuluCutObs = new MutationObserver(() => watchCuts());
     window.__zuluCutObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-act', 'class'] });
   }
-  const wait = setInterval(() => { if (window.__app && window.__app.menus) { clearInterval(wait); boot(); } }, 40);
+  const wait = setInterval(() => {
+    armBreachCam();
+    if (window.__app && window.__app.menus) { clearInterval(wait); boot(); }
+  }, 40);
 })();
