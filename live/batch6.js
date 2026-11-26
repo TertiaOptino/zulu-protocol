@@ -219,12 +219,13 @@
     draw();
     body.append(cnt);
     const grid = el('div', 'w1sbx-grid');
+    const keys = (window.__zuluPlaces && window.__zuluPlaces.maps && Object.keys(window.__zuluPlaces.maps)) || [];
     const seen = new Set();
-    for (const m of window.__zulu.MISSIONS) {
-      if (!m.map || m.training || m.tut || String(m.map).includes('@') || seen.has(m.map)) continue;
-      seen.add(m.map);
-      const b = el('button', 'w1sbx-map', '<b>' + mapName(m.map) + '</b><small>' + m.map + '</small>');
-      b.onclick = () => startSandbox(app, m.map, count);
+    for (const key of keys) {
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const b = el('button', 'w1sbx-map', '<b>' + mapName(key) + '</b><small>' + key + '</small>');
+      b.onclick = () => startSandbox(app, key, count);
       grid.append(b);
     }
     body.append(grid);
@@ -334,7 +335,7 @@
     if (!document.getElementById('batch6css')) {
       const st = document.createElement('style');
       st.id = 'batch6css';
-      st.textContent = '.w1sbx-bar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.45}.zcred p{margin:8px 0}.w1shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.w1shop-card{background:#14181c;border:1px solid #ffffff22;border-radius:10px;padding:8px;color:#e8efe4}.w1thumb{width:100%;height:auto;background:#0e1216;border-radius:8px}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
+      st.textContent = '.w1sbx-bar{position:fixed;left:8px;top:max(8px,env(safe-area-inset-top));bottom:auto;transform:none;z-index:30;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-start;max-width:min(520px,calc(100vw - 16px));background:#101410e6;color:#def;border:1px solid #6a8;border-radius:8px;padding:4px}.w1sbx-b,.w1sbx-chip{font:600 13px system-ui;color:#def;background:#ffffff14;border:1px solid #ffffff30;border-radius:8px;padding:6px 8px;min-height:36px}.w1sbx-chip.on{background:#2a6a3a}.w1sbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.w1sbx-map{text-align:left;color:#e8efe4;background:#ffffff10;border:1px solid #ffffff28;border-radius:8px;padding:8px}.zfps{position:fixed;left:12px;bottom:78px;z-index:28;display:none;gap:8px;align-items:flex-end}.zfps.on{display:flex}.zfps-stick{width:108px;height:108px;border-radius:50%;background:#0006;border:1px solid #fff4;touch-action:none}.zfps-fire{width:84px;height:84px;border-radius:50%;background:#e37b22;border:0;color:#1a1008;font:800 14px system-ui}.zfps-btn{font:700 13px system-ui;background:#12160fd0;color:#d7e4c8;border:1px solid #6a8a55;border-radius:8px;padding:6px 8px;min-height:36px}.zcred{margin-top:14px;padding-top:8px;border-top:1px solid #334;line-height:1.45}.zcred p{margin:8px 0}.w1shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.w1shop-card{background:#14181c;border:1px solid #ffffff22;border-radius:10px;padding:8px;color:#e8efe4}.w1thumb{width:100%;height:auto;background:#0e1216;border-radius:8px}@media (pointer:fine){.zfps-stick,.zfps-fire{display:none}}';
       document.head.append(st);
     }
     const menus = app.menus;

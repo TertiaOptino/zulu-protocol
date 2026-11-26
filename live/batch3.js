@@ -333,51 +333,11 @@
     const n = Math.max(1, Math.min(5, stageN || 1));
     const label = names[n - 1];
     const recipe = recipeFor(label, info.scenery);
-    stripBuiltIns(scene, L);
+    const isLot = /car park|motor pool|garage/i.test(label);
     const group = empty(bits);
     group.name = 'zstage';
-    const kit = KIT[recipe] || KIT.lobby;
-    const ban = blocked(L);
-    const rooms = roomsOf(L).slice(0, 4);
-    scene.updateMatrixWorld(true);
-    scene.traverse((o) => {
-      if (!o.isMesh || o.isSkinnedMesh || !o.geometry || o.name === 'zstage') return;
-      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
-      const bb = o.geometry.boundingBox;
-      if (!bb) return;
-      const fw = (bb.max.x - bb.min.x) * Math.abs(o.scale.x || 1);
-      const fd = (bb.max.z - bb.min.z) * Math.abs(o.scale.z || 1);
-      if (fw > 18 || fd > 18) return;
-      const e = o.matrixWorld.elements;
-      const x = e[12], z = e[14];
-      for (const room of rooms) {
-        if (x > room.minx + 0.8 && x < room.maxx + 0.2 && z > room.minz + 0.8 && z < room.maxz + 0.2) { o.visible = false; break; }
-      }
-    });
     let placed = 0;
-    rooms.forEach((room, ri) => {
-      const sp = spots(room, ban, L.W);
-      const use = kit.slice(0, Math.min(kit.length, Math.max(2, Math.floor(room.cells.length / 10))));
-      use.forEach((kind, i) => {
-        if (!sp.length) return;
-        const [x, z] = sp[(i * 3 + ri) % sp.length];
-        const p = prop(bits, kind);
-        add(group, p, x, z, (i % 2) ? Math.PI / 2 : 0);
-        placed++;
-      });
-    });
-    const op = g.ops && g.ops.find((o) => o.alive);
-    if (op) {
-      const ix = Math.floor(op.x), iz = Math.floor(op.z);
-      const home = rooms.find((room) => room.cells.some(([x, z]) => x === ix && z === iz)) || rooms[0];
-      const cx = home ? (home.minx + home.maxx) / 2 + 0.5 : op.x + 2;
-      const cz = home ? (home.minz + home.maxz) / 2 + 0.5 : op.z + 2;
-      kit.slice(0, 3).forEach((kind, i) => {
-        const p = prop(bits, kind);
-        add(group, p, cx + (i - 1) * 2.1, cz, i * 0.4);
-        placed++;
-      });
-    }
+    if (isLot) stripBuiltIns(scene, L);
     if (SEA[info.scenery]) {
       // a ring of water outside the playable grid, low enough that it cannot cover the camera
       const span = Math.max(L.W, L.H);
@@ -396,11 +356,11 @@
       const x = op ? op.x : L.W / 2, z = op ? op.z : L.H / 2;
       const dx = L.W / 2 - x, dz = L.H / 2 - z, d = Math.hypot(dx, dz) || 1, m = Math.min(0.35 * d, 5) / d;
       cam.target.set(x + dx * m, 0, z + dz * m);
-      cam.pitch = info.scenery === 'forest' ? 0.6 : (SEA[info.scenery] ? 0.78 : 0.9);
-      cam.dist = Math.max(24, Math.min(cam.dist || 24, 32));
+      cam.pitch = isLot ? 0.62 : (info.scenery === 'forest' ? 0.6 : (SEA[info.scenery] ? 0.78 : 0.9));
+      cam.dist = isLot ? 28 : Math.max(24, Math.min(cam.dist || 24, 32));
     }
-    g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id };
-    if (window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
+    g.zuluStage = { n, label, recipe, contents: CONTENTS[recipe], map: base, mapName: info.name, place: info.place, scenery: info.scenery, backdrop: info.backdrop, placed, missionId: g.mission && g.mission.id, kept: !isLot };
+    if (isLot && window.__zuluReshape) { try { window.__zuluReshape(g, g.zuluStage); } catch (err) { window.__shapeErr = String(err && err.stack || err); } }
     paintLabel(g);
     ensureMover(g, info, bits);
     return g.zuluStage;
@@ -413,8 +373,14 @@
       if (!o.isMesh || o.isSkinnedMesh) return;
       const nm = o.name || '';
       if (nm === 'zstage' || nm === 'zmove' || nm.indexOf('b3') === 0) return;
-      let p = o.parent;
-      while (p) { if (p.name === 'zstage' || p.name === 'zmove') return; p = p.parent; }
+      if (o.geometry && o.geometry.type === 'RingGeometry') return;
+      let p = o.parent, actor = false;
+      while (p) {
+        if (p.name === 'zstage' || p.name === 'zmove') return;
+        if (p.isSkinnedMesh || (p.children && p.children.some((c) => c.isSkinnedMesh))) actor = true;
+        p = p.parent;
+      }
+      if (actor) return;
       if (o.isInstancedMesh && o.getMatrixAt && o.setMatrixAt && o.count) {
         const M = o.matrix.clone();
         let hid = 0;
