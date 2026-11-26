@@ -744,7 +744,22 @@
     { id: 'd388', file: 'zulu-d388dc8fe8.html', label: 'Rifle hold and breach plan', date: '31 Oct 2026 · 16:49 UTC', what: 'Two-hand rifle, preview animations, breach planning, and gun finishes.', beta: true },
     { id: '9b21', file: 'zulu-9b214de139.html', label: 'Cameras, stacks, VIP star', date: '31 Oct 2026 · 13:16 UTC', what: 'Preview fixes, cameras, select-all, walk animation, door stacks, VIP star, and credits.', beta: true },
     { id: 'b2e9', file: 'zulu-b2e9046fdf.html', label: 'Unit preview fix', date: '24 Oct 2026 · 20:23 UTC', what: 'Fixes the unit preview. A 26 Oct README deploy served this same game.', beta: true },
-    { id: '6fdf', file: 'zulu-6fdf9f9ca2.html', label: 'First Pages publish', date: '24 Oct 2026 · 19:51 UTC', what: 'The earliest build GitHub Pages ever served. Props are plain blocks. The tactical soldier is already in the file. No older commit exists.', beta: true }
+    { id: '6fdf', file: 'zulu-6fdf9f9ca2.html', label: 'First Pages publish', date: '24 Oct 2026 · 19:51 UTC', what: 'The earliest build GitHub Pages ever served. Props are plain blocks. The tactical soldier is already in the file.', beta: true },
+    { id: 'e15', file: 'early-test-15.html', label: 'Early test 15', date: 'Before 24 Oct 2026', what: 'Last of the pre-Pages single-file dev builds. The menu has the tutorial and credits. Not in git history.', beta: true },
+    { id: 'e14', file: 'early-test-14.html', label: 'Early test 14', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. Tutorial and credits are in the menu.', beta: true },
+    { id: 'e13', file: 'early-test-13.html', label: 'Early test 13', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build with the tutorial offer. Twenty-eight missions.', beta: true },
+    { id: 'e12', file: 'early-test-12.html', label: 'Early test 12', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build with the tutorial offer.', beta: true },
+    { id: 'e11', file: 'early-test-11.html', label: 'Early test 11', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. The tutorial offer is on the menu.', beta: true },
+    { id: 'e10', file: 'early-test-10.html', label: 'Early test 10', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. The tutorial is in the menu. Twenty-eight missions.', beta: true },
+    { id: 'e09', file: 'early-test-9.html', label: 'Early test 9', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. Twenty-eight missions.', beta: true },
+    { id: 'e08', file: 'early-test-8.html', label: 'Early test 8', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. Twenty-eight missions.', beta: true },
+    { id: 'e07', file: 'early-test-7.html', label: 'Early test 7', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. The mission list grows to twenty-eight.', beta: true },
+    { id: 'e06', file: 'early-test-6.html', label: 'Early test 6', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. Nineteen missions.', beta: true },
+    { id: 'e05', file: 'early-test-5.html', label: 'Early test 5', date: 'Before 24 Oct 2026', what: 'Pre-Pages dev build. Nineteen missions. The soldier model is in the file.', beta: true },
+    { id: 'e04', file: 'early-test-4.html', label: 'Early test 4', date: 'Before 24 Oct 2026', what: 'The tactical soldier model first appears in this dev build. Still before GitHub Pages.', beta: true },
+    { id: 'e03', file: 'early-test-3.html', label: 'Early test 3', date: 'Before 24 Oct 2026', what: 'Before the soldier model and the van. Nineteen missions. Operators and props are simple geometry.', beta: true },
+    { id: 'e02', file: 'early-test-2.html', label: 'Early test 2', date: 'Before 24 Oct 2026', what: 'Before the soldier model and the van. Four missions.', beta: true },
+    { id: 'e01', file: 'early-test-1.html', label: 'Early test 1', date: 'Before 24 Oct 2026', what: 'The earliest single-file dev build in this set. Before the soldier model and the van. Four missions. No older playable file is in git history.', beta: true }
   ];
   const SAVE_KEY = 'zulu_protocol_save_v1', SAVE_BAK = 'zulu_w8_save_backup', SAVE_RET = 'zulu_w8_return';
   function installVersions(app) {
@@ -787,7 +802,7 @@
       host.append(warn);
       const cur = document.createElement('div');
       cur.className = 'w8v-card cur';
-      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Stage layouts match their names. Cutscenes show the squad moving, with captions and the male voice. Every published build is listed below, newest first. The 24 Oct 2026 file is the earliest Pages deploy. No older commit exists.</div>';
+      cur.innerHTML = '<div><b>Current</b> <span>You are here</span></div><div>' + (window.__ZULU_BUILD || '') + '</div><div>Stage layouts match their names. Cutscenes show the squad moving, with captions and the male voice. Every published build is listed below, newest first. The 24 Oct 2026 file is the first Pages deploy. Early tests 15 down to 1 are the older single-file dev builds, oldest last.</div>';
       host.append(cur);
       for (const v of OLD_VERSIONS) {
         const c = document.createElement('div');
