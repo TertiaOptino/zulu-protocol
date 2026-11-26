@@ -1386,18 +1386,89 @@
       if (this.moveUnit) this.moveUnit(e, t);
     };
   }
+  function clearShot(g, lookX, lookZ) {
+    const cam = g.env && g.env.cam;
+    const cine = cam && cam.cine;
+    const p = cine && cine.to && cine.to.p;
+    const L = g.level;
+    if (!p || !L || !L.type) return;
+    const blocked = (x, z) => {
+      const ix = Math.floor(x), iz = Math.floor(z);
+      if (ix < 0 || iz < 0 || ix >= L.W || iz >= L.H) return true;
+      const t = L.type[iz * L.W + ix];
+      return t === 1 || t === 2 || t === 4;
+    };
+    if (!blocked(p.x, p.z)) return;
+    const ix = Math.floor(lookX), iz = Math.floor(lookZ);
+    for (let r = 2; r <= 7; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+      const x = ix + dx + 0.5, z = iz + dz + 0.5;
+      if (blocked(x, z)) continue;
+      p.x = x; p.y = Math.max(p.y || 0, 2.2); p.z = z;
+      if (cine.to.l) { cine.to.l.x = lookX; cine.to.l.y = 0.9; cine.to.l.z = lookZ; }
+      return;
+    }
+  }
+  function armCineOverlay() {
+    if (!document.getElementById('zulu-cine-style')) {
+      const st = document.createElement('style');
+      st.id = 'zulu-cine-style';
+      st.textContent = 'body.zulu-cine #hud{z-index:40}body.zulu-cine .cine{z-index:2}body.zulu-cine .cine .bar{height:13vh}body.zulu-cine .cine-txt{left:max(12px,env(safe-area-inset-left))!important;right:max(12px,env(safe-area-inset-right));bottom:max(16vh,84px)!important;font:900 clamp(28px,8vw,48px)/1.05 system-ui,sans-serif!important;letter-spacing:.06em!important;z-index:3}#hud .cine.show{opacity:1!important}';
+      document.head.appendChild(st);
+    }
+    const hud = window.__app && window.__app.hud;
+    if (!hud || hud.__cineVis || !hud.setCine) return;
+    hud.__cineVis = true;
+    const orig = hud.setCine.bind(hud);
+    hud.setCine = function (on, label) {
+      orig(on, label);
+      document.body.classList.toggle('zulu-cine', !!on);
+    };
+  }
   function armBreachCam() {
     const g = window.__game;
     if (!g) return;
     const P = g.constructor.prototype;
-    if (!P.openDoor || P.__breachCam) return;
-    const open = P.openDoor;
-    P.openDoor = function (door, unit, method) {
-      const held = (method === 'open' || method === 'enemy') && (this.breaches || []).some((b) => b.door === door && b.phase !== 'done' && (b.units || []).some((u) => u.alive && u.kind !== 'enemy'));
-      if (held) return;
-      return open.call(this, door, unit, method);
-    };
-    P.__breachCam = true;
+    if (P.openDoor && !P.__breachCam) {
+      const open = P.openDoor;
+      P.openDoor = function (door, unit, method) {
+        const held = (method === 'open' || method === 'enemy') && (this.breaches || []).some((b) => b.door === door && b.phase !== 'done' && (b.units || []).some((u) => u.alive && u.kind !== 'enemy'));
+        if (held) return;
+        return open.call(this, door, unit, method);
+      };
+      P.__breachCam = true;
+    }
+    if (P.cinematic && !P.__cineClear) {
+      const cin = P.cinematic;
+      P.cinematic = function (b) {
+        const ret = cin.call(this, b);
+        try { if (b && b.door) clearShot(this, b.door.x + 0.5, b.door.y + 0.5); } catch (err) { /* keep the shot */ }
+        this.__cineAt = (typeof performance !== 'undefined' && performance.now()) || Date.now();
+        return ret;
+      };
+      P.__cineClear = true;
+    }
+    if (P.finalKill && !P.__finalCam) {
+      const fk = P.finalKill;
+      P.finalKill = function (victim, killer) {
+        const k = killer || (this.ops || []).find((o) => o && o.alive) || victim;
+        const ret = fk.call(this, victim, k);
+        try { if (victim) clearShot(this, victim.x, victim.z); } catch (err) { /* keep the shot */ }
+        this.__cineAt = (typeof performance !== 'undefined' && performance.now()) || Date.now();
+        return ret;
+      };
+      P.__finalCam = true;
+    }
+    if (P.skipCine && !P.__skipGrace) {
+      const skip = P.skipCine;
+      P.skipCine = function () {
+        const now = (typeof performance !== 'undefined' && performance.now()) || Date.now();
+        if (this.__cineAt && now - this.__cineAt < 800) return false;
+        return skip.call(this);
+      };
+      P.__skipGrace = true;
+    }
+    armCineOverlay();
   }
   window.__zuluReshape = reshape;
   window.__zuluFurnish = furnishKept;
